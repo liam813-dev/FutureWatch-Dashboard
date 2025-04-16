@@ -1,0 +1,33 @@
+--- frontend/components/LandingBackground.tsx ---
+// ... existing code ...
+    // Particle system
+    const particles: Particle[] = [];
+    const particleCount = 80; // Increased from 40
+    const baseHue = 210; // Blue base color
+// ... existing code ...
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.size = Math.random() * 2 + 1;
+        this.speedX = (Math.random() - 0.5) * 1.0; // Increased speed range from 0.5
+        this.speedY = (Math.random() - 0.5) * 1.0; // Increased speed range from 0.5
+        this.hue = baseHue + Math.random() * 30 - 15;
+        this.targetX = this.x;
+// ... existing code ...
+--- frontend/components/AnimatedBackground.tsx ---
+// ... existing code ...
+    // Particle system
+    const particles: Particle[] = [];
+    const particleCount = 80; // Increased from 50
+
+    class Particle {
+// ... existing code ...
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.size = Math.random() * 2 + 1;
+        this.speedX = (Math.random() - 0.5) * 3.0; // Increased speed range from 2
+        this.speedY = (Math.random() - 0.5) * 3.0; // Increased speed range from 2
+        this.opacity = Math.random() * 0.5 + 0.2;
+        this.color = `rgba(0, 224, 255, ${this.opacity})`;
+// ... existing code ...
+
+</rewritten_file> 

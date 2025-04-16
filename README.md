@@ -1,47 +1,114 @@
-# Neo Future Dashboard
+# FutureWatch
 
-## Deployment on Render
+Real-time cryptocurrency market data dashboard.
 
-This project is configured for deployment on [Render](https://render.com) using the `render.yaml` Blueprint.
+## Features
 
-### Deployment Steps:
+- Live market data for major cryptocurrencies
+- Real-time price charts with WebSocket updates
+- Liquidation feed and large trade detection
+- Market insights and analytics
+- Bubble detection for overextended price movements
 
-1. Fork or clone this repository to your own GitHub account.
-2. Create a new Render account or sign in to your existing account.
-3. Click on "New" and select "Blueprint" from the dropdown menu.
-4. Connect your GitHub account and select your repository.
-5. Render will automatically detect the `render.yaml` file and display the services.
-6. Configure any additional environment variables required by your application.
-7. Click "Apply" to start the deployment process.
+## Architecture
 
-### Environment Variables:
+- **Backend**: FastAPI + async SQLAlchemy 2.x
+- **Worker**: Continuous ingest worker for market data
+- **Frontend**: Next.js 14
+- **Database**: PostgreSQL for durable storage
+- **Deploy**: Render web service and worker
 
-Make sure to set the following environment variables in the Render dashboard:
+## ⚙️ Database Setup
 
-- For backend service:
-  - Any API keys or credentials needed by your application
-- For frontend service:
-  - The NEXT_PUBLIC_API_URL variable is automatically set to the backend URL
+The project uses PostgreSQL with SQLAlchemy for data persistence. Follow these steps to set up the database:
 
-### Monitoring and Logs:
+### Local Development
 
-After deployment, you can monitor your services and view logs directly from the Render dashboard.
+1. Install PostgreSQL locally or use a Docker container:
 
-### Local Development:
+```bash
+# Using Docker
+docker run --name futurewatch-postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=futurewatch -p 5432:5432 -d postgres
+```
 
-To run the project locally:
+2. Set the DATABASE_URL environment variable:
 
-1. Backend:
+```bash
+# For local development
+export DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost/futurewatch
+```
 
-   ```
-   cd backend
-   pip install -r requirements.txt
-   uvicorn server:app --host 0.0.0.0 --port 8001 --reload
-   ```
+3. Run the Alembic migrations to create the database schema:
 
-2. Frontend:
-   ```
-   cd frontend
-   npm install
-   npm run dev
-   ```
+```bash
+cd backend
+alembic upgrade head
+```
+
+### Running Migrations
+
+To create a new migration after changing the models:
+
+```bash
+cd backend
+alembic revision --autogenerate -m "describe_your_changes"
+```
+
+To apply migrations:
+
+```bash
+cd backend
+alembic upgrade head
+```
+
+### Production Deployment
+
+For production deployment on Render:
+
+1. The DATABASE_URL is configured via environment variable groups in render.yaml
+2. Migrations are run automatically during the build process
+3. Ensure the web service and worker service have access to the same database
+
+## Development Setup
+
+### Backend
+
+```bash
+cd backend
+pip install -r requirements.txt
+python server.py
+```
+
+### Worker
+
+```bash
+cd backend
+python worker/ingest.py
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## Verification
+
+After deployment, you can verify the setup by checking the API endpoints:
+
+```bash
+# Check health endpoint
+curl https://your-app-url.onrender.com/health
+
+# Fetch dashboard data
+curl https://your-app-url.onrender.com/api/data
+
+# Fetch bubble outliers
+curl https://your-app-url.onrender.com/api/bubbles
+```
+
+## License
+
+MIT

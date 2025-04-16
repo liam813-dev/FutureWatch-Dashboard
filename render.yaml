@@ -1,31 +1,36 @@
+# render.yaml for FutureWatch application deployment
 services:
-  # Backend service
+  # Web service - FastAPI backend
   - type: web
     name: neo-future-dashboard-backend
     env: python
-    plan: free
-    buildCommand: pip install -r backend/requirements.txt
-    startCommand: uvicorn backend.server:app --host 0.0.0.0 --port $PORT
-    envVars:
-      - key: PYTHONUNBUFFERED
-        value: true
-      - key: PORT
-        value: 8001
+    buildCommand: pip install -r backend/requirements.txt && cd backend && alembic upgrade head
+    startCommand: cd backend && python server.py
+    healthCheckPath: /health
+    envVarGroups:
+      - futurewatch-secrets
+    plan: standard
+    autoDeploy: true
+    numInstances: 
+      min: 1
+      max: 3
 
-  # Frontend service
-  - type: web
-    name: neo-future-dashboard-frontend
-    env: node
-    plan: free
-    buildCommand: cd frontend && npm install && npm run build
-    startCommand: cd frontend && npm start
+  # Worker service - Continuous data ingest
+  - type: worker
+    name: neo-future-worker
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && python worker/ingest.py
+    envVarGroups:
+      - futurewatch-secrets
+    plan: standard
+    autoDeploy: true
+
+# Environment variable groups
+envVarGroups:
+  - name: futurewatch-secrets
     envVars:
-      - key: NODE_ENV
+      - key: DATABASE_URL
+        value: postgresql://futurewatch_db_user:Nnb7O8ct8H2PR8ruopZqClE6HryQL2Ww@dpg-d000g0a4d50c739pt3l0-a/futurewatch_db
+      - key: ENV
         value: production
-      - key: PORT
-        value: 3000
-      - key: NEXT_PUBLIC_API_URL
-        fromService:
-          name: neo-future-dashboard-backend
-          type: web
-          envVarKey: RENDER_EXTERNAL_URL
