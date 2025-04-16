@@ -1,0 +1,124 @@
+/* Fix for React Grid Layout stacking issues */
+
+.react-grid-layout {
+  position: relative !important;
+  transition: height 200ms ease !important;
+  width: 100% !important;
+  overflow: visible !important;
+  margin: 0 !important;
+}
+
+.react-grid-item {
+  transition: all 200ms ease !important;
+  transition-property: left, top, width, height !important;
+  background: transparent !important;
+  position: absolute !important; /* Ensure absolute positioning */
+  will-change: transform !important; /* Hint for browser optimization */
+  box-shadow: var(--box-shadow) !important;
+  z-index: 1 !important;
+  display: flex !important;
+}
+
+.react-grid-item.cssTransforms {
+  transition-property: transform !important;
+  left: 0 !important;
+  top: 0 !important;
+  transform-origin: center !important; /* Reset transform origin */
+}
+
+.react-grid-item.resizing {
+  z-index: 3 !important;
+  transition: none !important;
+}
+
+.react-grid-item.react-draggable-dragging {
+  transition: none !important;
+  z-index: 3 !important;
+  cursor: grabbing !important;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: rgba(76, 255, 142, 0.15) !important;
+  border: 1px dashed rgba(76, 255, 142, 0.5) !important;
+  border-radius: var(--border-radius-lg) !important;
+  opacity: 0.8 !important;
+  transition-duration: 100ms !important;
+  z-index: 2 !important;
+  user-select: none !important;
+  pointer-events: none !important;
+}
+
+/* Additional fixes for specific components */
+.dashboardWidget {
+  height: 100% !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Clear any transform on subcomponents */
+.dashboardLayoutWrapper .widgetContainer,
+.dashboardLayoutWrapper .react-grid-item > div,
+.dashboardLayoutWrapper .gridItem > div {
+  transform: none !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.react-grid-item > .react-resizable-handle {
+  position: absolute !important;
+  bottom: 5px !important;
+  right: 5px !important;
+  width: 20px !important;
+  height: 20px !important;
+  cursor: se-resize !important;
+  z-index: 10 !important;
+  background-color: transparent !important;
+  background-repeat: no-repeat !important;
+  background-origin: content-box !important;
+  box-sizing: border-box !important;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><path fill="rgba(120, 220, 180, 0.7)" d="M0,0 v10 h10 z"/></svg>') !important;
+  background-position: bottom right !important;
+  padding: 0 3px 3px 0 !important;
+  transition: all 0.25s ease !important;
+}
+
+.react-grid-item > .react-resizable-handle:hover {
+  transform: scale(1.2) !important;
+  background-color: rgba(76, 255, 142, 0.2) !important;
+}
+
+/* Force 100% height and width for cards */
+.react-grid-item .widgetCard,
+.react-grid-item .cardContainer {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+/* Animation for new items */
+@keyframes gridItemFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.react-grid-item {
+  animation: gridItemFadeIn 0.3s ease forwards;
+}
+
+/* Fix z-index stacking for modals and tooltips */
+.react-grid-item .tooltip,
+.react-grid-item .dropdown-menu {
+  z-index: 1000 !important; /* Above grid items but below modals */
+}
+
+/* Ensure grid items fill their container properly */
+.react-grid-layout .react-grid-item .card-content {
+  flex: 1 !important;
+  overflow: auto !important;
+} 

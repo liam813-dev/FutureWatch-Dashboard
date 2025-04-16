@@ -1,0 +1,109 @@
+/* @/styles/TradeFeedPage.module.css */
+
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--color-bg-primary, #121212);
+  color: var(--color-text-primary, #eee);
+}
+
+.mainContent {
+  flex-grow: 1;
+  padding: 1.5rem 2rem; /* Adjust padding */
+  max-width: 1600px; /* Limit max width */
+  margin: 0 auto; /* Center content */
+  width: 100%;
+  margin-top: 70px; /* Account for fixed navbar height */
+  background-color: var(--color-bg-primary, #121212);
+}
+
+.pageTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary-color, #eee);
+}
+
+.contentGrid {
+  display: grid;
+  gap: 2rem;
+  /* Updated grid layout for all three components */
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto auto;
+}
+
+.analysisSection {
+  background-color: var(--card-bg-color, #1a1a1d);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #333);
+  padding: 1rem; /* Add padding inside the section */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.feedSection {
+  /* The TradeFeed component already has its own container/padding */
+  /* No extra background needed here, just defines grid area */
+  min-height: 500px; /* Ensure feed has some minimum height */
+}
+
+.optionsSection {
+  background-color: var(--card-bg-color, #1a1a1d);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #333);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-height: 400px; /* Ensure options has some minimum height */
+}
+
+.error {
+  color: var(--danger-color, #dc3545);
+  background-color: rgba(220, 53, 69, 0.1);
+  border: 1px solid var(--danger-color, #dc3545);
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+/* Responsive layout for tablets */
+@media (min-width: 768px) {
+  .contentGrid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "analysis analysis"
+      "feed options";
+  }
+  
+  .analysisSection {
+    grid-area: analysis;
+  }
+  
+  .feedSection {
+    grid-area: feed;
+  }
+  
+  .optionsSection {
+    grid-area: options;
+  }
+}
+
+/* Responsive layout for wider screens */
+@media (min-width: 1200px) {
+  .contentGrid {
+    /* Three-column layout for large screens */
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas:
+      "analysis feed options";
+  }
+  
+  .analysisSection {
+    grid-area: analysis;
+  }
+  
+  .feedSection {
+    grid-area: feed;
+  }
+  
+  .optionsSection {
+    grid-area: options;
+  }
+} 

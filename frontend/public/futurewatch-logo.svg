@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="eyeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00E0FF" />
+      <stop offset="100%" stop-color="#9C27B0" />
+    </linearGradient>
+    <linearGradient id="heartbeatGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#AC27FF" />
+      <stop offset="100%" stop-color="#8A27FF" />
+    </linearGradient>
+  </defs>
+
+  <!-- Main Eye Shape -->
+  <path d="M150 80C80 80 30 150 30 150C30 150 80 220 150 220C220 220 270 150 270 150C270 150 220 80 150 80Z" fill="none" stroke="url(#eyeGradient)" stroke-width="10" stroke-linecap="round" />
+
+  <!-- Heartbeat Line -->
+  <path d="M90 150H115L130 120L150 180L170 120L185 150H210" fill="none" stroke="url(#heartbeatGradient)" stroke-width="8" stroke-linecap="round" />
+
+  <!-- Circuit Elements Top Left -->
+  <path d="M70 100C50 80 40 70 40 70M70 100C70 100 70 80 70 60M70 100C70 100 90 90 110 90" fill="none" stroke="#00E0FF" stroke-width="8" stroke-linecap="round" />
+
+  <!-- Circuit Elements Top Right -->
+  <path d="M230 100C250 80 260 70 260 70M230 100C230 100 240 80 250 60M230 100C230 100 210 90 190 90" fill="none" stroke="#AC27FF" stroke-width="8" stroke-linecap="round" />
+
+  <!-- Circuit Elements Bottom -->
+  <path d="M70 200C50 220 40 230 40 230M70 200C70 200 70 220 70 240M70 200C70 200 90 210 110 210" fill="none" stroke="#00E0FF" stroke-width="8" stroke-linecap="round" />
+
+  <path d="M230 200C250 220 260 230 260 230M230 200C230 200 240 220 250 240M230 200C230 200 210 210 190 210" fill="none" stroke="#AC27FF" stroke-width="8" stroke-linecap="round" />
+
+  <!-- Connection Nodes -->
+  <circle cx="70" cy="100" r="8" fill="#00E0FF" />
+  <circle cx="230" cy="100" r="8" fill="#AC27FF" />
+  <circle cx="70" cy="200" r="8" fill="#00E0FF" />
+  <circle cx="230" cy="200" r="8" fill="#AC27FF" />
+  <circle cx="40" cy="70" r="8" fill="#00E0FF" />
+  <circle cx="70" cy="60" r="8" fill="#00E0FF" />
+  <circle cx="110" cy="90" r="8" fill="#00E0FF" />
+  <circle cx="260" cy="70" r="8" fill="#AC27FF" />
+  <circle cx="250" cy="60" r="8" fill="#AC27FF" />
+  <circle cx="190" cy="90" r="8" fill="#AC27FF" />
+  <circle cx="40" cy="230" r="8" fill="#00E0FF" />
+  <circle cx="70" cy="240" r="8" fill="#00E0FF" />
+  <circle cx="110" cy="210" r="8" fill="#00E0FF" />
+  <circle cx="260" cy="230" r="8" fill="#AC27FF" />
+  <circle cx="250" cy="240" r="8" fill="#AC27FF" />
+  <circle cx="190" cy="210" r="8" fill="#AC27FF" />
+</svg>

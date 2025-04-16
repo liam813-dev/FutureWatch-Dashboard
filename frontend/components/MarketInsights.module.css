@@ -1,0 +1,522 @@
+.insightsContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.insightCard {
+  background: var(--color-bg-secondary);
+  border-radius: 12px;
+  border: 1px solid rgba(var(--color-accent-secondary-rgb), 0.1);
+  padding: 1.25rem;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+  transition: all var(--transition-normal);
+}
+
+.insightCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+  border-color: rgba(var(--color-accent-rgb), 0.3);
+}
+
+.insightHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.75rem;
+}
+
+.insightTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  margin: 0;
+  font-family: var(--font-display);
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 5px var(--color-accent-glow);
+}
+
+.insightActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.insightButton {
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  padding: 0.25rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.insightButton:hover {
+  color: var(--color-accent);
+  background-color: rgba(var(--color-accent-rgb), 0.1);
+}
+
+.insightBody {
+  position: relative;
+  height: 180px;
+}
+
+.dataPoint {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(var(--color-border), 0.5);
+}
+
+.dataPoint:last-child {
+  border-bottom: none;
+}
+
+.dataLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.dataIcon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-secondary);
+}
+
+.dataValue {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.dataValueChangePositive {
+  color: var(--color-positive);
+  font-weight: 600;
+  text-shadow: 0 0 5px rgba(var(--color-accent-rgb), 0.5);
+}
+
+.dataValueChangeNegative {
+  color: var(--color-negative);
+  font-weight: 600;
+  animation: glow-red 1.5s infinite alternate;
+}
+
+.chartContainer {
+  height: 100%;
+  width: 100%;
+}
+
+.noData {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  border: 1px dashed var(--color-border);
+  border-radius: 8px;
+}
+
+.fundingRateGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.fundingRate {
+  background: var(--color-bg-tertiary);
+  padding: 0.75rem;
+  border-radius: var(--border-radius);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid transparent;
+}
+
+.fundingRate:hover {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 8px var(--color-accent-glow);
+  transform: translateY(-2px);
+}
+
+.coinLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--color-text-primary);
+}
+
+.coinIcon {
+  width: 14px;
+  height: 14px;
+}
+
+.rateValue {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.btcValue {
+  color: var(--color-btc);
+}
+
+.ethValue {
+  color: var(--color-eth);
+}
+
+.fundingRatePositive {
+  color: var(--color-positive);
+}
+
+.fundingRateNegative {
+  color: var(--color-negative);
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.loaderDot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin: 0 4px;
+  background-color: var(--color-accent);
+  border-radius: 50%;
+  animation: pulse 1.4s infinite ease-in-out both;
+}
+
+.loaderDot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loaderDot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes pulse {
+  0%, 80%, 100% { 
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.error {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: var(--color-negative);
+  gap: 0.5rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+.errorIcon {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 0.5rem;
+  animation: glow-red 1.5s infinite alternate;
+}
+
+@media (max-width: 992px) {
+  .insightsContainer {
+    grid-template-columns: 1fr;
+  }
+  
+  .fundingRateGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .fundingRateGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.insightsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.insightsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.insightItem {
+  background-color: var(--card-bg-color, #1a1a1d);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #333);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.insightItem:hover {
+  border-color: var(--accent-color, #4ecca3);
+  box-shadow: 0 0 10px rgba(78, 204, 163, 0.1);
+}
+
+.insightHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.insightMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 80%;
+}
+
+.insightCategory {
+  font-size: 1.2rem;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.insightTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.insightInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.insightTime {
+  font-size: 0.8rem;
+  color: var(--text-secondary-color, #aaa);
+}
+
+.expandIcon {
+  font-size: 1.2rem;
+  color: var(--accent-color, #4ecca3);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.insightContent {
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.insightItem.expanded .insightContent {
+  padding: 0.5rem 1rem 1rem;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.insightContent p {
+  margin: 0 0 1rem;
+  line-height: 1.5;
+  color: var(--text-primary-color, #eee);
+}
+
+.insightFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--text-secondary-color, #aaa);
+}
+
+.insightSource {
+  font-style: italic;
+}
+
+.readMoreLink {
+  color: var(--accent-color, #4ecca3);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.readMoreLink:hover {
+  color: var(--accent-hover-color, #3dbb8a);
+  text-decoration: underline;
+}
+
+.refreshButton {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary-color, #aaa);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.refreshButton:hover {
+  color: var(--accent-color, #4ecca3);
+  background-color: rgba(78, 204, 163, 0.1);
+}
+
+.noInsights {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary-color, #aaa);
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+/* New styles for Asset Events */
+.filters {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.filterSelect {
+  padding: 0.4rem 0.75rem;
+  border-radius: 4px;
+  background-color: var(--background-input, #2a2a2d);
+  border: 1px solid var(--border-color, #333);
+  color: var(--text-primary-color, #eee);
+  font-size: 0.85rem;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: var(--accent-color, #4ecca3);
+}
+
+.eventInfo {
+  font-size: 0.8rem;
+  color: var(--text-secondary-color, #aaa);
+}
+
+.loadMoreContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  padding: 0.5rem;
+}
+
+.loadMoreButton {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  background-color: transparent;
+  border: 1px solid var(--accent-color, #4ecca3);
+  color: var(--accent-color, #4ecca3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+}
+
+.loadMoreButton:hover {
+  background-color: var(--accent-color, #4ecca3);
+  color: #000;
+}
+
+.loadMoreButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  gap: 0.5rem;
+}
+
+.loaderDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--accent-color, #4ecca3);
+  animation: pulse 1.4s infinite ease-in-out both;
+}
+
+.loaderDot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loaderDot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes pulse {
+  0%, 80%, 100% { 
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.error {
+  padding: 2rem;
+  text-align: center;
+  color: var(--danger-color, #dc3545);
+}
+
+.errorIcon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .insightsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .filters {
+    width: 100%;
+  }
+  
+  .filterSelect {
+    width: 100%;
+  }
+} 

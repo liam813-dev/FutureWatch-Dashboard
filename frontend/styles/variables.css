@@ -1,0 +1,210 @@
+:root {
+  /* Typography */
+  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-family-mono: 'JetBrains Mono', Menlo, Monaco, Consolas, 'Courier New', monospace;
+  --font-family-heading: var(--font-family-base);
+  --font-family-display: 'Orbitron', var(--font-family-base);
+  
+  --font-size-xs: 0.75rem;   /* 12px */
+  --font-size-sm: 0.875rem;  /* 14px */
+  --font-size-md: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;  /* 18px */
+  --font-size-xl: 1.25rem;   /* 20px */
+  --font-size-2xl: 1.5rem;   /* 24px */
+  --font-size-3xl: 1.875rem; /* 30px */
+  --font-size-4xl: 2.25rem;  /* 36px */
+  
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Spacing */
+  --space-2xs: 0.25rem; /* 4px */
+  --space-xs: 0.5rem;   /* 8px */
+  --space-sm: 0.75rem;  /* 12px */
+  --space-md: 1rem;     /* 16px */
+  --space-lg: 1.5rem;   /* 24px */
+  --space-xl: 2rem;     /* 32px */
+  --space-2xl: 3rem;    /* 48px */
+  --space-3xl: 4rem;    /* 64px */
+  
+  /* Border radius */
+  --border-radius-none: 0;
+  --border-radius-xs: 2px;
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  --border-radius-full: 9999px;
+  
+  /* Shadows */
+  --shadow-none: none;
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  /* Neo-Future Dashboard Custom Shadows */
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --box-shadow-hover: 0 8px 16px rgba(0, 0, 0, 0.3);
+  --box-shadow-card: 0 0 12px rgba(0, 240, 255, 0.25);
+  --box-shadow-glow: 0 0 15px rgba(76, 255, 142, 0.5);
+  
+  /* Z-index layers */
+  --z-index-base: 0;
+  --z-index-dropdown: 10;
+  --z-index-sticky: 20;
+  --z-index-fixed: 30;
+  --z-index-modal-backdrop: 40;
+  --z-index-modal: 50;
+  --z-index-popover: 60;
+  --z-index-tooltip: 70;
+  --z-index-sidebar: 40;
+  --z-index-navbar: 1000;
+  
+  /* Transitions */
+  --transition-fast: 150ms;
+  --transition-normal: 250ms;
+  --transition-slow: 350ms;
+  --transition-function: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Layout */
+  --sidebar-width: 280px;
+  --sidebar-collapsed-width: 60px;
+  --header-height: 60px;
+  --navbar-height: 64px;
+  --content-max-width: 100%;
+  --content-padding-ultrawide: 48px;
+  
+  /* Colors - Neo Future Theme */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  
+  /* Primary palette */
+  --color-primary-50: #ecfdf5;
+  --color-primary-100: #d1fae5;
+  --color-primary-200: #a7f3d0;
+  --color-primary-300: #6ee7b7;
+  --color-primary-400: #34d399;
+  --color-primary-500: #10b981;
+  --color-primary-600: #059669;
+  --color-primary-700: #047857;
+  --color-primary-800: #065f46;
+  --color-primary-900: #064e3b;
+  
+  /* Neo-Future Dashboard Colors */
+  --color-primary: #4284f4;
+  --color-secondary: #6c5ce7;
+  --color-accent: #00d2d3;
+  --color-accent-secondary: #00A3FF;
+  --color-accent-tertiary: #c586c0;
+  --color-accent-glow: rgba(76, 255, 142, 0.5);
+  
+  /* Background colors */
+  --color-bg-primary: #0B0F19;
+  --color-bg-secondary: rgba(15, 23, 42, 0.8);
+  --color-bg-tertiary: rgba(30, 41, 59, 0.8);
+  --color-background: #121418;
+  --color-card: #1a1d23;
+  --sidebar-bg: rgba(11, 15, 25, 0.95);
+  --navbar-bg: #121820;
+  
+  /* Text colors */
+  --color-text: #eaecef;
+  --color-text-primary: rgba(255, 255, 255, 0.95);
+  --color-text-secondary: rgba(255, 255, 255, 0.7);
+  --color-text-tertiary: rgba(255, 255, 255, 0.5);
+  --color-text-on-accent: #000000;
+  
+  /* Status colors */
+  --color-success: #00D2D3;
+  --color-warning: #FFB300;
+  --color-error: #FF5252;
+  --color-info: #2196F3;
+  --color-positive: #4DAF7C;
+  --color-negative: #E55C5C;
+  --color-negative-bg: rgba(255, 82, 82, 0.1);
+  
+  /* Border colors */
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-hover: #3A3E45;
+  --border-accent: rgba(0, 210, 211, 0.3);
+  
+  /* Crypto specific colors */
+  --color-btc: #F7931A;
+  --color-eth: #627EEA;
+  
+  /* Glow effects */
+  --accent-glow: 0 0 20px rgba(0, 210, 211, 0.2);
+  --sidebar-highlight: linear-gradient(to bottom, rgba(0, 210, 211, 0.2), transparent 50%);
+  
+  /* Component specific variables */
+  --color-chart-grid: var(--color-gray-700);
+  --color-chart-tooltip-bg: var(--color-gray-800);
+  --color-chart-tooltip-border: var(--color-gray-600);
+  --color-input-bg: var(--color-gray-800);
+  --color-input-border: var(--color-gray-600);
+  --color-input-placeholder: var(--color-gray-400);
+  --color-button-focus-ring: rgba(16, 185, 129, 0.5);
+  --color-focus-ring: rgba(16, 185, 129, 0.5);
+  --color-selection-bg: var(--color-primary-200);
+}
+
+/* Light Theme - Keeping for future reference */
+.light-theme {
+  --color-bg: var(--color-white);
+  --color-bg-secondary: var(--color-gray-50);
+  --color-bg-tertiary: var(--color-gray-100);
+  --color-bg-hover: var(--color-gray-100);
+  --color-bg-active: var(--color-gray-200);
+  
+  --color-text: var(--color-gray-900);
+  --color-text-secondary: var(--color-gray-600);
+  --color-text-tertiary: var(--color-gray-500);
+  --color-text-disabled: var(--color-gray-400);
+  --color-text-inverse: var(--color-white);
+  
+  --color-border: var(--color-gray-200);
+  --color-border-hover: var(--color-gray-300);
+  --color-border-focus: var(--color-primary-300);
+  
+  --color-primary: var(--color-primary-500);
+  --color-primary-light: var(--color-primary-100);
+  --color-primary-dark: var(--color-primary-700);
+}
+
+/* Dark Theme - Currently Applied */
+.dark-theme {
+  --color-bg-primary: #0B0F19;
+  --color-bg-secondary: rgba(15, 23, 42, 0.8);
+  --color-bg-tertiary: rgba(30, 41, 59, 0.8);
+  
+  --color-text-primary: rgba(255, 255, 255, 0.95);
+  --color-text-secondary: rgba(255, 255, 255, 0.7);
+  --color-text-tertiary: rgba(255, 255, 255, 0.5);
+  
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-hover: #3A3E45;
+  
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.14);
+} 

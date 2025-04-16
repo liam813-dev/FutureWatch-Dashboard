@@ -1,0 +1,369 @@
+.container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background);
+  color: var(--text-primary);
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.settingsContainer {
+  display: flex;
+  gap: 2rem;
+  background-color: var(--background-card);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  min-height: 600px;
+}
+
+.settingsSidebar {
+  width: 250px;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 2rem 0;
+  border-right: 1px solid var(--border-color);
+}
+
+.pageTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  padding: 0 1.5rem 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tabList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tabItem {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 0.25rem;
+  border-left: 3px solid transparent;
+}
+
+.tabItem:hover {
+  background-color: rgba(var(--primary-rgb), 0.1);
+}
+
+.tabItem.active {
+  background-color: rgba(var(--primary-rgb), 0.15);
+  border-left: 3px solid var(--primary);
+  font-weight: 500;
+}
+
+.tabIcon {
+  margin-right: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.settingsContent {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.tabContent {
+  margin-bottom: 2rem;
+}
+
+.tabContent h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+.settingsGroup {
+  margin-bottom: 2rem;
+}
+
+.settingsGroup h3 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: var(--text-secondary);
+}
+
+.formGroup {
+  margin-bottom: 1.25rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.staticField {
+  padding: 0.6rem 0;
+  color: var(--text-primary);
+  opacity: 0.8;
+}
+
+.checkboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  margin-right: 0.75rem;
+  cursor: pointer;
+  accent-color: var(--primary);
+  width: 16px;
+  height: 16px;
+}
+
+/* Fix: add .formInput class to scope these selectors */
+.formInput input[type="text"],
+.formInput input[type="email"],
+.formInput input[type="number"],
+.formInput input[type="password"],
+.formInput select {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-input);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+/* Fix: add .formInput class to scope these selectors */
+.formInput input:focus,
+.formInput select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
+}
+
+.sessionTable {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  margin-top: 0.5rem;
+}
+
+.sessionRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sessionRow:last-child {
+  border-bottom: none;
+}
+
+.sessionIP, .sessionLocation, .sessionTime, .sessionDevice {
+  font-size: 0.9rem;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.primaryButton, 
+.secondaryButton, 
+.dangerButton,
+.saveButton,
+.resetButton {
+  padding: 0.75rem 1.25rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.primaryButton, 
+.saveButton {
+  background-color: var(--primary);
+  color: white;
+}
+
+.primaryButton:hover, 
+.saveButton:hover {
+  background-color: var(--primary-dark);
+}
+
+.secondaryButton,
+.resetButton {
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.secondaryButton:hover,
+.resetButton:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dangerButton {
+  background-color: var(--error);
+  color: white;
+}
+
+.dangerButton:hover {
+  background-color: var(--error-dark);
+}
+
+/* Toggle Button for the Settings component */
+.toggleButton {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  transition: all 0.2s;
+}
+
+.toggleButton:hover {
+  transform: scale(1.05);
+}
+
+.icon {
+  font-size: 1.5rem;
+}
+
+.panel {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 320px;
+  background-color: var(--background-card);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  overflow: hidden;
+}
+
+.title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: 1.25rem;
+  margin: 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.section {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.sectionTitle {
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.option {
+  margin-bottom: 0.75rem;
+}
+
+.option:last-child {
+  margin-bottom: 0;
+}
+
+.option label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .settingsContainer {
+    flex-direction: column;
+  }
+  
+  .settingsSidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.5rem 0;
+  }
+  
+  .tabList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0 1rem;
+  }
+  
+  .tabItem {
+    padding: 0.5rem 1rem;
+    border-left: none;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 0;
+  }
+  
+  .tabItem.active {
+    border-left: none;
+    border-color: var(--primary);
+  }
+  
+  .settingsContent {
+    padding: 1.5rem;
+  }
+  
+  .sessionRow {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .buttonGroup, 
+  .actionButtons {
+    flex-direction: column;
+  }
+} 

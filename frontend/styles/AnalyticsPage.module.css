@@ -1,0 +1,159 @@
+/* @/styles/AnalyticsPage.module.css */
+
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--color-bg-primary, #121212);
+  color: var(--color-text-primary, #eee);
+}
+
+.mainContent {
+  flex-grow: 1;
+  padding: 1.5rem 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+  margin-top: 70px; /* Account for fixed navbar height */
+  background-color: var(--color-bg-primary, #121212);
+}
+
+.pageTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary-color, #eee);
+}
+
+.contentGrid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto auto auto auto;
+}
+
+.metricsSection {
+  background-color: var(--card-bg-color, #1a1a1d);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #333);
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.heatmapSection {
+  background-color: var(--card-bg-color, #1a1a1d);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #333);
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.macroSection {
+  background-color: var(--card-bg-color, #1a1a1d);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #333);
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.chartSection, .insightsSection {
+  background-color: var(--card-bg-color, #1a1a1d);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #333);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-height: 300px;
+}
+
+.analyticsCard {
+  height: 100%;
+  padding: 1.5rem;
+}
+
+.cardTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--color-text-primary, #eee);
+}
+
+.cardContent {
+  color: var(--color-text-secondary, #aaa);
+  font-size: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100% - 3rem);
+  text-align: center;
+}
+
+.error {
+  color: var(--danger-color, #dc3545);
+  background-color: rgba(220, 53, 69, 0.1);
+  border: 1px solid var(--danger-color, #dc3545);
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+/* Responsive layout for tablets */
+@media (min-width: 768px) {
+  .contentGrid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "metrics metrics"
+      "heatmap macro"
+      "chart insights";
+  }
+  
+  .metricsSection {
+    grid-area: metrics;
+  }
+  
+  .heatmapSection {
+    grid-area: heatmap;
+  }
+  
+  .macroSection {
+    grid-area: macro;
+  }
+  
+  .chartSection {
+    grid-area: chart;
+  }
+  
+  .insightsSection {
+    grid-area: insights;
+  }
+}
+
+/* Responsive layout for wider screens */
+@media (min-width: 1200px) {
+  .contentGrid {
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "metrics metrics macro"
+      "heatmap chart insights";
+  }
+  
+  .metricsSection {
+    grid-area: metrics;
+  }
+  
+  .heatmapSection {
+    grid-area: heatmap;
+  }
+  
+  .macroSection {
+    grid-area: macro;
+  }
+  
+  .chartSection {
+    grid-area: chart;
+  }
+  
+  .insightsSection {
+    grid-area: insights;
+  }
+} 

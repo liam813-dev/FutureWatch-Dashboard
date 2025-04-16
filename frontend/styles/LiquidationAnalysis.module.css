@@ -1,0 +1,87 @@
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg-color, #0d1117);
+  color: var(--text-primary-color, #e6edf3);
+}
+
+.mainContent {
+  flex-grow: 1;
+  padding: 2rem;
+  max-width: 1400px; /* Limit max width for better readability */
+  margin: 1rem auto; /* Center content */
+  width: 100%;
+}
+
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary-color, #e6edf3);
+}
+
+.pageSubtitle {
+  font-size: 1rem;
+  color: var(--text-secondary-color, #aaa);
+  margin-bottom: 2rem;
+}
+
+.heatmapWrapper {
+  width: 100%;
+  height: 600px; /* Define a height for the heatmap container */
+  max-width: 100%;
+  background-color: var(--card-bg-color, #1a1a1d);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Ensure heatmap itself fills the wrapper */
+.heatmapWrapper > div { /* Target the container div added by LiquidationHeatmap */
+  height: 100% !important;
+  width: 100% !important;
+}
+
+/* Styles for Controls */
+.controlsContainer {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem 0;
+  align-items: center;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.controlGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.controlGroup label {
+  font-size: 0.9rem;
+  color: var(--text-secondary-color, #aaa);
+  font-weight: 500;
+}
+
+.controlSelect {
+  padding: 0.4rem 0.8rem;
+  background-color: var(--input-bg-color, #222);
+  border: 1px solid var(--border-color, #444);
+  color: var(--text-primary-color, #eee);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.controlSelect:focus {
+  border-color: var(--accent-color, #4ecca3);
+}
+
+.controlSelect option {
+  background-color: var(--input-bg-color, #222);
+  color: var(--text-primary-color, #eee);
+} 

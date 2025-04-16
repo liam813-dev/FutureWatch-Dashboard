@@ -1,0 +1,578 @@
+.container {
+  background-color: var(--color-card-bg);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  min-height: 0;
+  box-sizing: border-box;
+  transition: height 0.3s ease;
+}
+
+/* New horizontal layout for when market metrics is at the top */
+.horizontalContainer {
+  background-color: var(--color-card-bg);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  min-height: 0;
+  box-sizing: border-box;
+  transition: height 0.3s ease;
+}
+
+.horizontalGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Default, will be overridden in component */
+  gap: 6px;
+  width: 100%;
+  flex: 1;
+  overflow: visible;
+  min-height: 0;
+  padding-right: 4px;
+  box-sizing: border-box;
+  transition: grid-template-columns 0.3s ease;
+}
+
+/* Horizontal layout for cards - more compact */
+.horizontalCard {
+  background-color: var(--color-bg-secondary);
+  border-radius: 3px;
+  border: 1px solid var(--color-border);
+  padding: 6px;
+  transition: all var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: auto;
+  max-height: none;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.horizontalCard:hover {
+  border-color: var(--color-border-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* When in horizontal mode, make metrics more compact */
+.horizontalMetrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+  flex: 1;
+}
+
+.title {
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  font-family: var(--font-family-mono);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  height: auto;
+  box-sizing: border-box;
+  text-transform: capitalize;
+}
+
+.title::before {
+  content: '📊';
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.extraCoinsLabel {
+  font-size: 0.65rem;
+  font-weight: normal;
+  color: var(--color-primary);
+  background-color: rgba(var(--rgb-primary), 0.1);
+  padding: 1px 3px;
+  border-radius: 2px;
+  margin-left: 4px;
+}
+
+.loadingContainer, .errorContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.loadingSpinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(var(--rgb-primary), 0.2);
+  border-radius: 50%;
+  border-top-color: var(--color-primary);
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.errorContainer {
+  background-color: rgba(255, 50, 50, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 50, 50, 0.2);
+  color: var(--color-error);
+}
+
+.errorContainer h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.errorContainer p {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Default, will be overridden in component */
+  gap: 6px;
+  width: 100%;
+  flex: 1;
+  overflow: visible;
+  min-height: 0;
+  padding-right: 4px;
+  box-sizing: border-box;
+  height: auto;
+  transition: grid-template-columns 0.3s ease;
+}
+
+.card {
+  background-color: var(--color-bg-secondary);
+  border-radius: 3px;
+  border: 1px solid var(--color-border);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: auto;
+  max-height: none;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.card:hover {
+  border-color: var(--color-border-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.coinTitle {
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin: 0 0 2px 0;
+  font-family: var(--font-family-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 2px;
+  box-sizing: border-box;
+}
+
+.metrics, .horizontalMetrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  flex: 1;
+  overflow: auto;
+  max-height: none;
+  box-sizing: border-box;
+  height: calc(100% - 22px);
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  padding: 2px;
+  box-sizing: border-box;
+}
+
+.price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  line-height: 1.2;
+}
+
+.change {
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  line-height: 1;
+}
+
+.positive {
+  color: var(--color-positive);
+}
+
+.negative {
+  color: var(--color-negative);
+}
+
+.label {
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-transform: capitalize;
+  letter-spacing: 0.05em;
+  margin-bottom: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.value {
+  color: var(--color-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-family-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+}
+
+.arrowIcon {
+  font-size: 0.75rem;
+}
+
+/* Responsive adjustments */
+@media (min-width: 1400px) {
+  .horizontalGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .horizontalGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .horizontalGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .horizontalMetrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 991px) {
+  .horizontalGrid, .grid {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 0.75rem;
+  }
+  
+  .metrics, .horizontalMetrics {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.3rem;
+  }
+  
+  .metric {
+    padding: 0.25rem 0;
+  }
+  
+  .container, .horizontalContainer {
+    padding: 0.75rem;
+  }
+  
+  .title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .value {
+    font-size: 0.8rem;
+  }
+  
+  .label {
+    font-size: 0.6rem;
+  }
+  
+  .horizontalCard, .card {
+    min-height: auto;
+    padding: 0.75rem 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .metrics, .horizontalMetrics {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.25rem;
+  }
+}
+
+/* Custom scrollbar styles for both grid types */
+.grid::-webkit-scrollbar, .horizontalGrid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.grid::-webkit-scrollbar-track, .horizontalGrid::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.grid::-webkit-scrollbar-thumb, .horizontalGrid::-webkit-scrollbar-thumb {
+  background: rgba(100, 100, 100, 0.4);
+  border-radius: 10px;
+}
+
+.grid::-webkit-scrollbar-thumb:hover, .horizontalGrid::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 100, 100, 0.5);
+}
+
+/* Ultrawide support */
+@media (min-width: 2560px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 2rem;
+  }
+  
+  .container {
+    padding: 2rem;
+  }
+  
+  .card {
+    padding: 1.5rem;
+  }
+  
+  .metrics {
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 3440px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+    gap: 2.5rem;
+  }
+}
+
+/* Order book specific styles */
+.metricGroup {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.groupLabel {
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  opacity: 0.8;
+  margin-bottom: 0.25rem;
+}
+
+.orderBook {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.orderSide {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.bidSide {
+  text-align: left;
+}
+
+.askSide {
+  text-align: right;
+}
+
+.bidSide .value {
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.askSide .value {
+  color: var(--color-error);
+  font-weight: 700;
+}
+
+.orderSeparator {
+  padding: 0 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.orderSeparator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--color-border);
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+.spreadValue {
+  background: var(--color-card-bg);
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  z-index: 1;
+  position: relative;
+  border: 1px solid var(--color-border);
+  cursor: help;
+}
+
+.qty {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  opacity: 0.8;
+}
+
+/* Responsive adjustments for horizontal layout */
+@media (max-width: 1600px) {
+  .horizontalGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .horizontalMetrics {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1200px) {
+  .horizontalGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .horizontalMetrics {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .horizontalGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .horizontalMetrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .horizontalContainer {
+    grid-template-columns: 1fr;
+  }
+  
+  .card, .horizontalCard {
+    padding: 1rem;
+    min-height: 120px;
+  }
+  
+  .price {
+    font-size: 1.25rem;
+  }
+  
+  .change {
+    font-size: 0.75rem;
+  }
+  
+  .label {
+    font-size: 0.7rem;
+  }
+}
+
+/* Custom scrollbars */
+.grid::-webkit-scrollbar, 
+.horizontalGrid::-webkit-scrollbar,
+.metrics::-webkit-scrollbar,
+.horizontalMetrics::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.grid::-webkit-scrollbar-track,
+.horizontalGrid::-webkit-scrollbar-track,
+.metrics::-webkit-scrollbar-track,
+.horizontalMetrics::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.grid::-webkit-scrollbar-thumb,
+.horizontalGrid::-webkit-scrollbar-thumb,
+.metrics::-webkit-scrollbar-thumb,
+.horizontalMetrics::-webkit-scrollbar-thumb {
+  background-color: rgba(var(--color-border-rgb, 200, 200, 200), 0.5);
+  border-radius: 4px;
+}
+
+.grid::-webkit-scrollbar-thumb:hover,
+.horizontalGrid::-webkit-scrollbar-thumb:hover,
+.metrics::-webkit-scrollbar-thumb:hover,
+.horizontalMetrics::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(var(--color-accent-rgb, 100, 200, 200), 0.5);
+}
+
+/* Container variations for different coin counts */
+.container[data-show-extra-coins="true"],
+.horizontalContainer[data-show-extra-coins="true"] {
+  height: auto;
+  min-height: 280px;
+}
+
+.container[data-show-extra-coins="false"],
+.horizontalContainer[data-show-extra-coins="false"] {
+  height: auto;
+  min-height: 180px;
+} 

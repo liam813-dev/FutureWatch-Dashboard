@@ -1,0 +1,204 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-focus-ring);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Button Variants */
+.primary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.primary:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+}
+
+.secondary:hover {
+  background-color: var(--color-secondary-dark);
+}
+
+.tertiary {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.tertiary:hover {
+  background-color: var(--color-primary-light);
+}
+
+.ghost {
+  background-color: transparent;
+  color: var(--color-text);
+}
+
+.ghost:hover {
+  background-color: var(--color-bg-hover);
+}
+
+.success {
+  background-color: var(--color-success);
+  color: var(--color-white);
+}
+
+.success:hover {
+  background-color: var(--color-success-dark);
+}
+
+.warning {
+  background-color: var(--color-warning);
+  color: var(--color-text-dark);
+}
+
+.warning:hover {
+  background-color: var(--color-warning-dark);
+}
+
+.error {
+  background-color: var(--color-error);
+  color: var(--color-white);
+}
+
+.error:hover {
+  background-color: var(--color-error-dark);
+}
+
+.info {
+  background-color: var(--color-info);
+  color: var(--color-white);
+}
+
+.info:hover {
+  background-color: var(--color-info-dark);
+}
+
+/* Button Sizes */
+.xs {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-size-xs);
+  height: 24px;
+}
+
+.sm {
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-xs);
+  height: 32px;
+}
+
+.md {
+  padding: var(--space-sm) var(--space-lg);
+  height: 40px;
+}
+
+.lg {
+  padding: var(--space-md) var(--space-xl);
+  font-size: var(--font-size-md);
+  height: 48px;
+}
+
+.xl {
+  padding: var(--space-lg) var(--space-2xl);
+  font-size: var(--font-size-lg);
+  height: 56px;
+}
+
+/* Button Icon Styling */
+.iconOnly {
+  padding: var(--space-sm);
+  aspect-ratio: 1;
+}
+
+.iconOnly.xs {
+  padding: var(--space-xs);
+}
+
+.iconOnly.lg {
+  padding: var(--space-md);
+}
+
+.leftIcon {
+  margin-right: var(--space-xs);
+}
+
+.rightIcon {
+  margin-left: var(--space-xs);
+}
+
+/* Button Groups */
+.buttonGroup {
+  display: inline-flex;
+}
+
+.buttonGroup .button {
+  border-radius: 0;
+}
+
+.buttonGroup .button:first-child {
+  border-top-left-radius: var(--border-radius-sm);
+  border-bottom-left-radius: var(--border-radius-sm);
+}
+
+.buttonGroup .button:last-child {
+  border-top-right-radius: var(--border-radius-sm);
+  border-bottom-right-radius: var(--border-radius-sm);
+}
+
+/* Button with loading state */
+.loading {
+  position: relative;
+  color: transparent;
+}
+
+.loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-top: -8px;
+  margin-left: -8px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: var(--color-white);
+  animation: spin 0.8s linear infinite;
+}
+
+.darkLoader::after {
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-top-color: var(--color-text);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+} 

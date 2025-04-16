@@ -1,0 +1,158 @@
+.tooltipContainer {
+  position: relative;
+  display: inline-flex;
+}
+
+.tooltip {
+  position: absolute;
+  background: rgba(var(--color-bg-secondary-rgb), 0.95);
+  color: var(--color-text-primary);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  max-width: 300px;
+  width: max-content;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 
+              0 0 1px var(--color-border),
+              0 0 15px var(--color-accent-glow);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: all var(--transition-normal);
+  pointer-events: none;
+  transform: translateY(5px);
+  border: 1px solid var(--color-border);
+}
+
+.tooltip::before {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: rgba(var(--color-bg-secondary-rgb), 0.95);
+  transform: rotate(45deg);
+  border: 1px solid var(--color-border);
+  z-index: -1;
+}
+
+.tooltipVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Position Variants */
+.top {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-5px);
+  margin-bottom: 8px;
+}
+
+.top.tooltipVisible {
+  transform: translateX(-50%) translateY(0);
+}
+
+.top::before {
+  bottom: -6px;
+  left: 50%;
+  margin-left: -5px;
+  border-top: none;
+  border-left: none;
+}
+
+.bottom {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(5px);
+  margin-top: 8px;
+}
+
+.bottom.tooltipVisible {
+  transform: translateX(-50%) translateY(0);
+}
+
+.bottom::before {
+  top: -6px;
+  left: 50%;
+  margin-left: -5px;
+  border-bottom: none;
+  border-right: none;
+}
+
+.left {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%) translateX(-5px);
+  margin-right: 8px;
+}
+
+.left.tooltipVisible {
+  transform: translateY(-50%) translateX(0);
+}
+
+.left::before {
+  right: -6px;
+  top: 50%;
+  margin-top: -5px;
+  border-left: none;
+  border-bottom: none;
+}
+
+.right {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%) translateX(5px);
+  margin-left: 8px;
+}
+
+.right.tooltipVisible {
+  transform: translateY(-50%) translateX(0);
+}
+
+.right::before {
+  left: -6px;
+  top: 50%;
+  margin-top: -5px;
+  border-right: none;
+  border-top: none;
+}
+
+/* Special Variants */
+.accent .tooltip {
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 
+              0 0 15px var(--color-accent-glow);
+}
+
+.accent .tooltip::before {
+  background: var(--color-accent);
+}
+
+.dark .tooltip {
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-bright);
+}
+
+.dark .tooltip::before {
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-bright);
+}
+
+/* Tooltip content styling */
+.title {
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+  color: var(--color-accent);
+  font-family: var(--font-display);
+  font-size: var(--font-size-sm);
+}
+
+.content {
+  line-height: 1.4;
+}
+
+.highlight {
+  color: var(--color-accent);
+  font-weight: 600;
+} 

@@ -1,0 +1,65 @@
+/* TradeFeedAnalysis.module.css */
+
+.analysisContainer {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Space between title, stats, and chart */
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--accent-color, #4ecca3);
+  margin-bottom: 0.5rem;
+}
+
+.statsGrid {
+  display: grid;
+  /* Create 3 columns for stats, adjust as needed */
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.statBox {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color-light, #333);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.statLabel {
+  font-size: 0.85rem;
+  color: var(--text-secondary-color, #aaa);
+}
+
+.statValue {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.buy {
+  color: var(--success-color, #28a745);
+}
+
+.sell {
+  color: var(--danger-color, #dc3545);
+}
+
+.chartContainer {
+  height: 300px; /* Example fixed height */
+  /* Or use aspect ratio: aspect-ratio: 16 / 7; */
+  position: relative; /* Needed for chart responsiveness */
+  background-color: rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+  padding: 1rem;
+}
+
+.noData {
+    color: var(--text-secondary-color, #aaa);
+    text-align: center;
+    padding: 2rem;
+} 

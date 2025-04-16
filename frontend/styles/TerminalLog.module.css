@@ -1,0 +1,65 @@
+.container {
+  background-color: var(--terminal-bg);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  color: var(--terminal-text);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  font-family: 'Fira Code', monospace;
+}
+
+.log {
+  background-color: var(--terminal-log-bg);
+  border-radius: 4px;
+  padding: 1rem;
+  font-family: 'Fira Code', monospace;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.entry {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--terminal-border);
+}
+
+.entry:last-child {
+  border-bottom: none;
+}
+
+.timestamp {
+  color: var(--terminal-prompt);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.message {
+  color: var(--terminal-text);
+  font-size: 0.875rem;
+  flex: 1;
+}
+
+.error {
+  background-color: var(--terminal-error-bg);
+  border: 1px solid var(--terminal-error);
+  border-radius: 6px;
+  padding: 1rem;
+  color: var(--terminal-error);
+  text-align: center;
+}
+
+.error h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+}
+
+.error p {
+  font-size: 0.875rem;
+  opacity: 0.8;
+} 

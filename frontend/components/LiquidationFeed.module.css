@@ -1,0 +1,263 @@
+.feedContainer {
+  /* Basic container styling */
+  padding: 1rem;
+  background-color: var(--card-bg-color, #1a1a1d); /* Use CSS variables if available */
+  border-radius: 8px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--accent-color, #4ecca3); /* Use accent color */
+}
+
+.tableScrollContainer {
+  flex-grow: 1;
+  overflow-y: auto; /* Allow vertical scrolling */
+  max-height: 100%; /* Ensure it doesn't overflow card */
+}
+
+.feedTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.feedTable th,
+.feedTable td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color, #333); /* Use border color variable */
+  white-space: nowrap;
+}
+
+.feedTable th {
+  font-weight: 600;
+  color: var(--text-secondary-color, #aaa); /* Lighter color for headers */
+  position: sticky;
+  top: 0;
+  background-color: var(--card-bg-color, #1a1a1d); /* Match container background */
+  z-index: 1;
+}
+
+/* Add styles for sortable headers */
+.sortableHeader {
+  cursor: pointer;
+  user-select: none; /* Prevent text selection */
+  transition: color 0.2s ease;
+}
+
+.sortableHeader:hover {
+  color: var(--text-primary-color, #eee); /* Highlight on hover */
+}
+
+.sortIndicator {
+  font-size: 0.8em;
+  margin-left: 0.3em;
+  color: var(--accent-color, #4ecca3); /* Use accent color for indicator */
+  display: inline-block; /* Prevent wrapping */
+}
+
+/* Alternating row colors for readability */
+.feedTable tbody tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.long {
+  color: var(--success-color, #28a745);
+  font-weight: 500;
+  background-color: rgba(40, 167, 69, 0.1); /* Semi-transparent green */
+}
+
+.short {
+  color: var(--danger-color, #dc3545);
+  font-weight: 500;
+  background-color: rgba(220, 53, 69, 0.1); /* Semi-transparent red */
+}
+
+.loading,
+.error,
+.noData {
+  color: var(--text-secondary-color, #aaa);
+  text-align: center;
+  padding: 2rem;
+}
+
+.feedHeaderControls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Space out title and filters */
+    padding: 10px 15px;
+    border-bottom: 1px solid #444;
+    gap: 15px;
+    flex-wrap: wrap; /* Ensure wrapping works with new filters */
+}
+
+/* Style for filter group container (reusable) */
+.filterGroup {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Style for filter labels (reusable) */
+.filterLabel {
+    color: #bbb;
+    font-size: 0.9em;
+}
+
+/* Style for the select dropdown (reusable) */
+.filterSelect {
+    padding: 5px 8px;
+    background-color: #333;
+    color: #eee;
+    border: 1px solid #555;
+    border-radius: 4px;
+    font-size: 0.9em;
+    cursor: pointer;
+    min-width: 80px;
+}
+
+.filterSelect:hover {
+    border-color: #777;
+}
+
+/* New styles for the list-based layout */
+.listContainer {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 15px;
+  border-bottom: 1px solid #444;
+  font-size: 0.85em;
+  color: #aaa;
+  position: sticky; /* Keep header visible */
+  top: 0;
+  background-color: var(--card-bg-color, #1a1a1d);
+  z-index: 1;
+}
+
+.liqItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 15px;
+  border-bottom: 1px solid #333;
+  font-size: 0.9em;
+}
+
+.liqItem:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.liqInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Space out coin, side, value */
+  flex-grow: 1; /* Allow this section to take available space */
+}
+
+.coin {
+  font-weight: 600;
+  min-width: 50px; /* Ensure some space for coin */
+  color: #eee;
+}
+
+.side {
+  min-width: 40px; /* Ensure some space for side */
+  text-align: left;
+}
+
+.long .side {
+  color: var(--success-color, #28a745);
+}
+
+.short .side {
+  color: var(--danger-color, #dc3545);
+}
+
+.value {
+  font-weight: 500;
+  min-width: 60px; /* Ensure space for value */
+  text-align: right;
+}
+
+.time {
+  font-size: 0.85em;
+  color: #aaa;
+  white-space: nowrap; /* Prevent time from wrapping */
+  text-align: right;
+  min-width: 70px; /* Ensure space for time */
+  padding-left: 10px; /* Add space between value and time */
+}
+
+.timeHeader {
+  text-align: right;
+  min-width: 70px; 
+  padding-left: 10px;
+}
+
+/* Ensure sortable headers within the flex layout work */
+.headerRow .sortableHeader {
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+    display: inline-flex; /* Use flex for alignment with indicator */
+    align-items: center;
+}
+.headerRow .sortableHeader:hover {
+    color: #eee;
+}
+.headerRow .sortIndicator {
+    font-size: 0.8em;
+    margin-left: 0.3em;
+    color: var(--accent-color, #4ecca3);
+}
+
+/* Remove old table styles if they exist */
+.tableScrollContainer,
+.feedTable,
+.feedTable th,
+.feedTable td {
+  /* Remove properties or set to initial if needed, 
+     or just delete these rules if they are no longer used by any component */
+   display: none; /* Hide completely */
+}
+
+/* Ensure loading/error styles still work */
+.loading,
+.error,
+.noData {
+  color: var(--text-secondary-color, #aaa);
+  text-align: center;
+  padding: 2rem;
+}
+
+/* The old styles for symbolSelectors, symbolGroup, etc., are now removed */
+
+/* Responsive adjustments for larger screens */
+@media (min-width: 1024px) {
+  .feedHeaderControls {
+    flex-wrap: nowrap; /* Prevent wrapping on wide screens */
+  }
+
+  /* Optionally ensure filters don't stretch too much */
+  .filterGroup {
+    flex-shrink: 0; /* Prevent shrinking/growing */
+  }
+
+  /* Target the dropdown container indirectly if needed */
+  /* .symbolDropdownContainer { */
+  /*   margin-left: auto; Push to the right */ 
+  /*   flex-shrink: 0; */
+  /* } */
+}
+
+/* ... Rest of styles ... */ 

@@ -1,0 +1,605 @@
+.controlsContainer {
+  position: fixed;
+  right: 0;
+  top: 70px;
+  transform: none;
+  z-index: 100;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.controlsLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.controlsRight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.controlsToggle {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  box-shadow: var(--box-shadow);
+  color: var(--color-accent);
+  padding: 1rem 0.5rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.controlsToggle:hover {
+  background: var(--color-bg-primary);
+  color: var(--color-accent-secondary);
+}
+
+.toggleLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.controlsPanel {
+  width: 350px;
+  height: 600px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 12px 0 0 12px;
+  box-shadow: var(--box-shadow);
+  position: absolute;
+  right: -350px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.open .controlsPanel {
+  right: 0;
+}
+
+.controlsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--color-border);
+  background: rgba(var(--color-bg-primary-rgb), 0.8);
+}
+
+.controlsHeader h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  background: rgba(var(--color-bg-primary-rgb), 0.6);
+  color: var(--color-text-primary);
+}
+
+.controlsContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-accent) var(--color-bg-secondary);
+}
+
+.controlsContent::-webkit-scrollbar {
+  width: 6px;
+}
+
+.controlsContent::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+.controlsContent::-webkit-scrollbar-thumb {
+  background-color: var(--color-accent);
+  border-radius: 6px;
+}
+
+.controlSection {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.controlSection:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.controlSection h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+  color: var(--color-accent);
+}
+
+.controlItem {
+  margin-bottom: 1rem;
+}
+
+.controlLabel {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--color-text-primary);
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-left: 30px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  user-select: none;
+}
+
+.checkboxLabel input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.checkboxLabel:hover input ~ .checkmark {
+  border-color: var(--color-accent);
+}
+
+.checkboxLabel input:checked ~ .checkmark {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.checkboxLabel input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.checkboxLabel .checkmark:after {
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.controlDescription {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  margin-top: 0.25rem;
+  margin-left: 30px;
+}
+
+.selectControl {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
+  font-family: inherit;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238899A6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  transition: all 0.2s ease;
+}
+
+.selectControl:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(var(--color-accent-rgb), 0.2);
+}
+
+.themeToggle {
+  display: flex;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.themeButton {
+  flex: 1;
+  padding: 0.5rem;
+  background: var(--color-bg-primary);
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.themeButton:hover {
+  background: rgba(var(--color-accent-rgb), 0.1);
+}
+
+.themeButton.active {
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+  font-weight: 600;
+}
+
+.layoutNameContainer {
+  margin-bottom: 1rem;
+}
+
+.layoutNameContainer label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--color-text-primary);
+}
+
+.layoutNameInput {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.layoutNameInput:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(var(--color-accent-rgb), 0.2);
+}
+
+.saveButton {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--color-accent);
+  border: none;
+  border-radius: 4px;
+  color: var(--color-text-on-accent);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.2s ease;
+}
+
+.saveButton:hover {
+  background: var(--color-accent-secondary);
+}
+
+.refresh {
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.refreshButton {
+  background: transparent;
+  border: none;
+  color: var(--color-accent);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  transition: all var(--transition-normal);
+}
+
+.refreshButton:hover {
+  background-color: rgba(var(--color-accent-rgb), 0.1);
+  transform: rotate(15deg);
+  color: var(--color-accent-secondary);
+  box-shadow: 0 0 10px var(--color-accent-glow);
+}
+
+.refreshIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.timeframeSelector {
+  position: relative;
+}
+
+.selectorButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-size: 0.8rem;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.selectorButton:hover {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 8px var(--color-accent-glow);
+}
+
+.selectorIcon {
+  width: 14px;
+  height: 14px;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  width: 200px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  overflow: hidden;
+}
+
+.dropdownItem {
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all var(--transition-normal);
+}
+
+.dropdownItem:hover {
+  background: rgba(var(--color-accent-rgb), 0.1);
+  color: var(--color-accent);
+  transform: translateX(2px);
+}
+
+.dropdownItem.active {
+  background: rgba(var(--color-accent-rgb), 0.1);
+  color: var(--color-accent);
+  border-right: 2px solid var(--color-accent);
+}
+
+.button {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  border-radius: var(--border-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.primaryButton {
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+  border: 1px solid var(--color-accent);
+}
+
+.primaryButton:hover {
+  box-shadow: 0 0 10px var(--color-accent-glow);
+  transform: translateY(-2px);
+}
+
+.secondaryButton {
+  background: transparent;
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+}
+
+.secondaryButton:hover {
+  background: rgba(var(--color-accent-rgb), 0.1);
+  box-shadow: 0 0 8px var(--color-accent-glow);
+  transform: translateY(-2px);
+}
+
+.buttonIcon {
+  width: 14px;
+  height: 14px;
+}
+
+.toggleButton {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-text-secondary);
+  padding: 0.4rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.toggleButton:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text-primary);
+}
+
+.toggleButton.active {
+  background: rgba(var(--color-accent-rgb), 0.1);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.toggleButtonGroup {
+  display: flex;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.toggleButtonGroup .toggleButton {
+  border: none;
+  border-radius: 0;
+  border-right: 1px solid var(--color-border);
+  margin: 0;
+}
+
+.toggleButtonGroup .toggleButton:last-child {
+  border-right: none;
+}
+
+.chartViewToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.viewLabel {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.searchContainer {
+  position: relative;
+}
+
+.searchInput {
+  padding: 0.5rem 0.75rem 0.5rem 2rem;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-size: 0.8rem;
+  color: var(--color-text-primary);
+  width: 200px;
+  transition: all var(--transition-normal);
+}
+
+.searchInput:focus {
+  width: 250px;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 8px var(--color-accent-glow);
+}
+
+.searchIcon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 992px) {
+  .controlsContainer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .controlsRight {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 768px) {
+  .controlsLeft,
+  .controlsRight {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  
+  .searchInput,
+  .searchInput:focus {
+    width: 100%;
+  }
+  
+  .searchContainer {
+    flex-grow: 1;
+  }
+  
+  .controlsPanel {
+    width: 300px;
+    height: 500px;
+    right: -300px;
+  }
+  
+  .controlsToggle {
+    padding: 0.75rem 0.35rem;
+  }
+  
+  .toggleLabel {
+    font-size: 0.7rem;
+  }
+} 

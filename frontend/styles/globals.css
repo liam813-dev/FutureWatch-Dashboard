@@ -1,0 +1,1094 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500;600;700&display=swap');
+@import url('./variables.css');
+
+:root {
+  /* Using variables.css for most definitions */
+}
+
+/* CRT Effects */
+@keyframes flicker {
+  0% {
+    opacity: 0.95;
+  }
+  5% {
+    opacity: 0.85;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  20% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.95;
+  }
+  80% {
+    opacity: 0.9;
+  }
+  90% {
+    opacity: 0.98;
+  }
+  100% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 8px var(--color-accent);
+    box-shadow: 0 0 8px var(--color-accent-glow);
+  }
+  to {
+    text-shadow: 0 0 15px var(--color-accent);
+    box-shadow: 0 0 15px var(--color-accent-glow);
+  }
+}
+
+@keyframes glow-red {
+  from {
+    text-shadow: 0 0 8px var(--color-negative);
+  }
+  to {
+    text-shadow: 0 0 15px var(--color-negative);
+  }
+}
+
+html,
+body,
+#__next {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family-base);
+  background: var(--color-bg-primary) !important; /* Enforce background */
+  color: var(--color-text-primary);
+  line-height: var(--line-height-normal);
+  font-size: var(--font-size-md);
+  -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
+}
+
+/* Fix for any containers that might have white backgrounds */
+.container, 
+div[class*="container"],
+div[class*="wrapper"],
+div[class*="page"],
+div[class*="content"] {
+  background-color: var(--color-bg-primary, #0B0E11);
+}
+
+#__next {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background-color: var(--color-bg-primary, #0B0E11);
+}
+
+main {
+  flex: 1 0 auto;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 !important;
+  max-width: 100vw !important;
+  width: calc(100vw - 70px) !important;
+  margin-left: 70px !important;
+  margin-top: var(--navbar-height) !important; /* Add top margin for navbar */
+  overflow-x: hidden !important;
+  background-color: var(--color-bg-primary, #0B0E11) !important;
+}
+
+footer {
+  flex-shrink: 0; /* Prevent footer from shrinking */
+  background-color: var(--color-bg-secondary, #121418);
+}
+
+body::before {
+  content: none;
+}
+
+body::after {
+  content: none;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color var(--transition-fast), text-shadow var(--transition-fast);
+  position: relative;
+}
+
+a:hover {
+  color: var(--color-accent-secondary);
+  text-shadow: 0 0 8px var(--color-accent-glow);
+}
+
+a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: var(--color-accent-secondary);
+  box-shadow: 0 0 8px var(--color-accent-glow);
+  transition: width var(--transition-normal);
+}
+
+a:hover::after {
+  width: 100%;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Typography styles with improved spacing and consistency */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  margin: var(--space-lg) 0 var(--space-md);
+  line-height: 1.2;
+  letter-spacing: 0.05em;
+  color: var(--color-text-primary); /* Ensure consistent color */
+}
+
+h1 {
+  font-size: var(--font-size-3xl);
+  text-shadow: 0 0 10px var(--color-accent-glow);
+  animation: glow 1.5s infinite alternate;
+  margin-top: 0; /* Remove top margin for primary headings */
+}
+
+h2 {
+  font-size: var(--font-size-2xl);
+  letter-spacing: 0.04em;
+}
+
+h3 {
+  font-size: var(--font-size-xl);
+  letter-spacing: 0.03em;
+}
+
+p {
+  margin: 0 0 var(--space-md);
+  font-weight: 400;
+  color: var(--color-text-primary); /* Ensure text is readable */
+}
+
+code {
+  font-family: var(--font-mono);
+  background: var(--color-bg-tertiary);
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-accent);
+}
+
+/* Enhanced button styles with better hover effects */
+button {
+  cursor: pointer;
+  border: none;
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--border-radius);
+  transition: all var(--transition-normal);
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.5px;
+  outline: none;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--box-shadow);
+}
+
+button:hover {
+  background: var(--color-bg-tertiary);
+  box-shadow: var(--box-shadow-hover);
+  transform: translateY(-1px);
+}
+
+button.primary {
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+  box-shadow: 0 0 10px var(--color-accent-glow);
+}
+
+button.primary:hover {
+  background: var(--color-accent);
+  box-shadow: 0 0 15px var(--color-accent-glow);
+  transform: translateY(-2px);
+}
+
+button.secondary {
+  background: transparent;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+}
+
+button.secondary:hover {
+  background: rgba(var(--color-accent-rgb), 0.1);
+  box-shadow: 0 0 10px var(--color-accent-glow);
+}
+
+/* Form element styles */
+input, select, textarea {
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-md);
+  width: 100%;
+  transition: all var(--transition-fast);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent-glow);
+  outline: none;
+}
+
+/* Table styles */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: var(--space-md) 0;
+  color: var(--color-text-primary);
+  box-shadow: var(--box-shadow);
+}
+
+th, td {
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+th {
+  font-weight: 600;
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* Custom scrollbar for better UX */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #141924;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2A2E35;
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3A3E45;
+}
+
+/* Enhanced card styles with consistent spacing and shadows */
+.card {
+  background: #1A1E23;
+  padding: 18px !important;
+  width: 100% !important; /* Ensure cards use full width */
+  border-radius: 8px;
+  border: 1px solid #2A2E35;
+  box-shadow: var(--box-shadow);
+  transition: all 0.2s ease;
+  margin-bottom: var(--space-lg);
+}
+
+.card:hover {
+  border-color: #3A3E45;
+  box-shadow: var(--box-shadow-hover);
+}
+
+.card h3 {
+  color: var(--color-text-primary);
+  margin-top: 0;
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-lg);
+}
+
+/* Status indicators */
+.status-positive {
+  color: var(--color-positive);
+  font-weight: 600;
+}
+
+.status-negative {
+  color: var(--color-negative);
+  font-weight: 600;
+}
+
+.status-warning {
+  color: var(--color-warning);
+  font-weight: 600;
+}
+
+/* Alert box styling */
+.alert-box {
+  padding: var(--space-md);
+  border-radius: var(--border-radius);
+  margin: var(--space-md) 0;
+  border-left: 4px solid var(--color-accent);
+}
+
+/* Loading spinner */
+.loading-spinner {
+  border: 4px solid rgba(var(--color-accent-rgb), 0.1);
+  border-left: 4px solid var(--color-accent);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  margin-right: var(--space-sm);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Page transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* Additional styles for the React Grid Layout dashboard */
+.react-grid-item {
+  transition: all 200ms ease !important;
+  transition-property: left, top, width, height !important;
+  z-index: 1;
+}
+
+.react-grid-item.react-draggable-dragging {
+  transition: none !important;
+  z-index: 3;
+  box-shadow: var(--box-shadow-hover);
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: rgba(42, 46, 53, 0.3) !important;
+  border: 1px dashed #3A3E45 !important;
+  border-radius: 8px !important;
+  opacity: 0.6 !important;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 1200px) {
+  html, body {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  html, body {
+    font-size: 14px;
+  }
+  
+  h1 {
+    font-size: var(--font-size-2xl);
+  }
+  
+  h2 {
+    font-size: var(--font-size-xl);
+  }
+  
+  h3 {
+    font-size: var(--font-size-lg);
+  }
+
+  .card {
+    padding: var(--space-md);
+  }
+
+  .react-grid-item {
+    transition: none;
+  }
+}
+
+/* React Grid Layout Styles - Optimized for resize functionality */
+
+/* Ensure proper positioning of grid items */
+.react-grid-layout {
+  position: relative !important;
+  transition: height 200ms ease !important;
+  width: 100% !important;
+}
+
+/* Basic styling for grid items */
+.react-grid-item {
+  transition: all 200ms ease !important;
+  transition-property: left, top, width, height !important;
+  background: transparent !important;
+  transform: none !important; /* Remove any default transforms */
+  position: absolute !important; /* Ensure absolute positioning */
+  will-change: transform !important; /* Hint for browser optimization */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+  z-index: 1 !important;
+}
+
+/* Override for transition during resize */
+.react-grid-item.resizing, 
+.react-draggable-transparent-selection .react-grid-item {
+  transition: none !important;
+  z-index: 100 !important;
+}
+
+/* Styles for resize handles */
+.react-grid-item > .react-resizable-handle {
+  position: absolute !important;
+  width: 36px !important;
+  height: 36px !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  cursor: se-resize !important;
+  background-color: rgba(76, 255, 142, 0.3) !important;
+  border: 2px solid rgba(76, 255, 142, 0.6) !important;
+  border-radius: 6px !important;
+  z-index: 100 !important;
+  opacity: 0.9 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background-color 0.2s ease, transform 0.2s ease !important;
+  transform-origin: bottom right !important;
+}
+
+/* Hover effect for resize handles */
+.react-grid-item > .react-resizable-handle:hover {
+  background-color: rgba(76, 255, 142, 0.6) !important;
+  transform: scale(1.1) !important;
+}
+
+/* Resize handle arrow */
+.react-grid-item > .react-resizable-handle::after {
+  content: "" !important;
+  display: block !important;
+  width: 16px !important;
+  height: 16px !important;
+  border-right: 3px solid rgba(255, 255, 255, 1) !important;
+  border-bottom: 3px solid rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Remove transitions during resize to improve performance */
+.react-draggable-transparent-selection, 
+.react-draggable-transparent-selection * {
+  cursor: se-resize !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+.react-draggable-transparent-selection .react-grid-layout,
+.react-draggable-transparent-selection .react-grid-item {
+  transition: none !important;
+}
+
+/* Card styling during resize */
+.react-grid-item.resizing .card {
+  box-shadow: 0 0 20px rgba(76, 255, 142, 0.5) !important;
+  pointer-events: none !important;
+  z-index: 1000 !important;
+}
+
+/* Remove existing styles that could conflict with resizing */
+.react-resizable-hide > .react-resizable-handle {
+  display: none !important;
+}
+
+/* 
+  Modern Dashboard Global Styles
+  Contains global styles and React Grid Layout overrides for a seamless dashboard experience
+*/
+
+/* Global base styles */
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Recharts global styling */
+.recharts-tooltip-wrapper {
+  z-index: 100;
+}
+
+.custom-tooltip {
+  background-color: #1A1E23;
+  border: 1px solid #2A2E35;
+  border-radius: 4px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.custom-tooltip-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #F0F4F9;
+  margin-bottom: 4px;
+}
+
+.custom-tooltip-value {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #ADB5C2;
+}
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: #2A2E35;
+  stroke-width: 1;
+  stroke-opacity: 0.3;
+}
+
+.recharts-xAxis .recharts-cartesian-axis-tick-line,
+.recharts-yAxis .recharts-cartesian-axis-tick-line {
+  display: none;
+}
+
+.recharts-xAxis .recharts-cartesian-axis-tick-value,
+.recharts-yAxis .recharts-cartesian-axis-tick-value {
+  font-size: 10px;
+  fill: #636B75;
+}
+
+.recharts-default-legend {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 8px !important;
+}
+
+.recharts-legend-item {
+  display: flex !important;
+  align-items: center;
+  gap: 4px;
+}
+
+.recharts-legend-item-text {
+  font-size: 11px !important;
+  color: #636B75 !important;
+}
+
+/* React Grid Layout global styles */
+.react-grid-layout {
+  position: relative !important;
+  transition: height 200ms ease !important;
+  width: 100% !important;
+}
+
+.react-grid-item {
+  transition: all 200ms ease !important;
+  transition-property: left, top, width, height !important;
+  background: transparent !important;
+  transform: none !important; /* Remove any default transforms */
+  position: absolute !important; /* Ensure absolute positioning */
+  will-change: transform !important; /* Hint for browser optimization */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+  z-index: 1 !important;
+}
+
+.react-grid-item.cssTransforms {
+  transition-property: transform !important;
+  backface-visibility: hidden !important;
+  transform-origin: center !important; /* Reset transform origin */
+}
+
+.react-grid-item.resizing {
+  z-index: 999 !important;
+  transition: none !important;
+}
+
+.react-grid-item.react-draggable-dragging {
+  transition: none !important;
+  z-index: 100 !important;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: rgba(76, 255, 142, 0.15) !important;
+  border: 1px dashed rgba(76, 255, 142, 0.5) !important;
+  border-radius: 16px !important;
+  opacity: 0.8 !important;
+  transition-duration: 100ms !important;
+  z-index: 2 !important;
+}
+
+.react-grid-item > .react-resizable-handle {
+  position: absolute !important;
+  width: 30px !important;
+  height: 30px !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  cursor: se-resize !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Special styles for resize operations */
+.resizing-active {
+  cursor: se-resize;
+  user-select: none;
+}
+
+/* Animation for dashboard card transitions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.react-grid-item {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* Placeholder pulse animation during resize/drag */
+@keyframes placeholderPulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.react-grid-placeholder {
+  animation: placeholderPulse 1.5s infinite;
+}
+
+/* Improved focus styles for accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .react-grid-item {
+    transition: none !important;
+  }
+  
+  :root {
+    --space-md: 12px;
+    --space-lg: 16px;
+    --border-radius: 10px;
+  }
+}
+
+/* Adjust layout to move content next to sidebar */
+.mainWrapper.withSidebar {
+  padding-left: var(--sidebar-width) !important;
+  padding-top: var(--navbar-height) !important;
+  transition: padding 0.3s ease !important;
+}
+
+/* Adjust grid to align with sidebar */
+.dashboardGrid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(850px, 1fr)) !important;
+  gap: 20px !important;
+  margin-left: 0 !important; /* Remove negative margin */
+  padding: 16px 16px 16px 4px !important; /* Reduce left padding */
+  width: 100% !important;
+}
+
+.dashboardHeader {
+  padding: 12px 20px !important;
+}
+
+.dashboardWidget {
+  transform: scale(1.1); /* Increased scale for larger cards */
+  transform-origin: top left;
+  margin-bottom: 12px;
+}
+
+.widgetCard {
+  padding: 24px !important; 
+  min-width: 100% !important;
+  border-radius: 14px !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.widgetCard:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25) !important;
+}
+
+.cardHeader {
+  padding: 0 0 14px 0 !important;
+  margin-bottom: 14px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.cardTitle {
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 10px !important;
+  letter-spacing: 0.02em !important;
+}
+
+.cardDescription {
+  font-size: 0.95rem !important;
+  line-height: 1.5 !important;
+  margin-top: 6px !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.cardContent {
+  padding: 16px 8px !important;
+  font-size: 1.05rem !important;
+}
+
+/* Improve spacing for content inside cards */
+.dashboardWidget > div {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Additional breakpoints for wider cards */
+@media (min-width: 1600px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr !important; /* Single column for large displays */
+    max-width: calc(100vw - 140px) !important;
+  }
+  
+  .widgetCard {
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 1200px) {
+  .dashboardGrid {
+    grid-template-columns: repeat(auto-fit, minmax(550px, 1fr)) !important; /* Still very wide on medium screens */
+  }
+}
+
+@media (max-width: 992px) {
+  .dashboardGrid {
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)) !important; /* Slightly reduced but still wide */
+  }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr !important;
+    padding: 8px !important;
+  }
+  
+  .dashboardWidget {
+    transform: none;
+  }
+  
+  .main {
+    margin-left: 0 !important;
+    width: 100vw !important;
+  }
+  
+  .mainWrapper.withSidebar {
+    padding-left: 0 !important; /* No sidebar padding on mobile */
+  }
+}
+
+/* Navbar Enhancements */
+.navigation {
+  height: var(--navbar-height) !important;
+  background-color: var(--navbar-bg) !important;
+  border-bottom: 1px solid var(--border-accent) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: var(--navbar-z-index) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+/* Special corner treatment for navbar */
+.navContainer::after {
+  content: "" !important;
+  position: absolute !important;
+  bottom: -2px !important;
+  left: var(--sidebar-width) !important;
+  width: 20px !important;
+  height: 20px !important;
+  background-color: transparent !important;
+  border-top-left-radius: 20px !important;
+  box-shadow: -10px -10px 0 0 var(--navbar-bg) !important;
+  z-index: var(--navbar-z-index) !important;
+}
+
+/* Sidebar Enhancements */
+.sidebar {
+  position: fixed !important;
+  background: linear-gradient(180deg, var(--sidebar-bg) 0%, rgba(15, 18, 23, 0.95) 100%) !important;
+  border-right: 1px solid rgba(0, 210, 211, 0.08) !important;
+  top: var(--navbar-height) !important;
+  height: calc(100vh - var(--navbar-height)) !important;
+  z-index: var(--sidebar-z-index) !important;
+  box-shadow: 4px 0 25px rgba(0, 0, 0, 0.2) !important;
+  backdrop-filter: blur(10px) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  width: var(--sidebar-width) !important;
+  padding: 1rem !important;
+}
+
+.sidebar.collapsed {
+  width: var(--sidebar-collapsed-width) !important;
+}
+
+/* Enhanced connector between navbar and sidebar */
+.sidebar::before {
+  content: "" !important;
+  position: absolute !important;
+  top: -1px !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, 
+    rgba(0, 210, 211, 0.3), 
+    rgba(0, 210, 211, 0.1) 50%, 
+    transparent) !important;
+  z-index: 2 !important;
+  box-shadow: 0 0 20px rgba(0, 210, 211, 0.15) !important;
+}
+
+/* Special right edge accent for sidebar */
+.sidebar::after {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  width: 1px !important;
+  height: 100% !important;
+  background: linear-gradient(to bottom, 
+    rgba(0, 210, 211, 0.2), 
+    rgba(0, 210, 211, 0.05) 30%, 
+    transparent) !important;
+  z-index: 2 !important;
+}
+
+/* Enhance the sidebar section headers */
+.sectionHeader {
+  padding: 1rem 0.75rem !important;
+  margin-bottom: 0.5rem !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  background: linear-gradient(90deg, 
+    rgba(0, 210, 211, 0.08), 
+    transparent) !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.sectionHeader:hover {
+  background: linear-gradient(90deg, 
+    rgba(0, 210, 211, 0.12), 
+    transparent) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Sidebar navigation items */
+.sidebarNav {
+  padding: 0.5rem 0 !important;
+}
+
+.sidebarNavItem {
+  padding: 0.75rem 1rem !important;
+  margin: 0.25rem 0 !important;
+  border-radius: 8px !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  background: transparent !important;
+}
+
+.sidebarNavItem:hover {
+  background: rgba(0, 210, 211, 0.08) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  transform: translateX(4px) !important;
+}
+
+.sidebarNavItem.active {
+  background: linear-gradient(90deg, 
+    rgba(0, 210, 211, 0.15), 
+    rgba(0, 210, 211, 0.05)) !important;
+  color: #00F0FF !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 8px rgba(0, 240, 255, 0.15) !important;
+}
+
+/* Sidebar icons */
+.sidebarIcon {
+  width: 20px !important;
+  height: 20px !important;
+  opacity: 0.8 !important;
+  transition: all 0.2s ease !important;
+}
+
+.sidebarNavItem:hover .sidebarIcon {
+  opacity: 1 !important;
+  transform: scale(1.1) !important;
+}
+
+.sidebarNavItem.active .sidebarIcon {
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.4)) !important;
+}
+
+/* Collapsed state styles */
+.sidebar.collapsed .sectionHeader span,
+.sidebar.collapsed .sidebarNavItem span {
+  display: none !important;
+}
+
+.sidebar.collapsed .sidebarNavItem {
+  padding: 0.75rem !important;
+  justify-content: center !important;
+}
+
+.sidebar.collapsed .sectionHeader {
+  padding: 0.75rem !important;
+  justify-content: center !important;
+}
+
+/* Hover effect for collapsed sidebar */
+.sidebar.collapsed .sidebarNavItem:hover {
+  transform: scale(1.1) !important;
+}
+
+/* Logo container enhancement */
+.logoContainer {
+  position: relative !important;
+  z-index: var(--navbar-z-index) !important;
+  margin-right: 2rem !important;
+}
+
+/* Logo text enhancement */
+.logoText {
+  background: linear-gradient(to right, #fff, #b199f5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text !important;
+  color: transparent;
+  text-shadow: 0 0 15px rgba(0, 210, 211, 0.5) !important;
+}
+
+/* Main content area adjustments */
+.main {
+  width: calc(100% - 20px) !important;
+  margin-top: 0 !important;
+  margin-left: 10px !important;
+  overflow-x: hidden !important;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    background-image: none !important;
+  }
+  
+  .navContainer::after {
+    display: none !important;
+  }
+}
+
+.someClass {
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.gradientText {
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+} 

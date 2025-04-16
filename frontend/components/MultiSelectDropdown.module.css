@@ -1,0 +1,148 @@
+/* MultiSelectDropdown.module.css */
+
+.dropdownContainer {
+  position: relative;
+  min-width: 180px; /* Adjust as needed */
+  font-size: 0.9em;
+}
+
+.dropdownButton {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 8px 12px;
+  background-color: #2a2a2e; /* Darker background for button */
+  color: #eee;
+  border: 1px solid #444;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.dropdownButton:hover {
+  background-color: #333;
+  border-color: #666;
+}
+
+.arrow {
+  border: solid #ccc;
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  padding: 3px;
+  margin-left: 10px;
+  transition: transform 0.3s ease;
+}
+
+.arrow.down {
+  transform: rotate(45deg);
+}
+
+.arrow.up {
+  transform: translateY(2px) rotate(-135deg);
+}
+
+.dropdownPanel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #252528; /* Slightly lighter panel bg */
+  border: 1px solid #444;
+  border-top: none;
+  border-radius: 0 0 5px 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  max-height: 300px; /* Limit height and allow scrolling */
+  overflow-y: auto;
+  display: flex; /* Use flexbox for panel layout */
+  flex-direction: column;
+}
+
+.dropdownActions {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid #444;
+  order: 1; /* Order after search */
+}
+
+.actionButton {
+  background: none;
+  border: none;
+  color: #4ecca3; /* Accent color */
+  padding: 4px 8px;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.actionButton:hover {
+  color: #68e0b4;
+}
+
+.optionsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+  overflow-y: auto;
+  order: 2; /* Order after actions */
+}
+
+.optionItem {
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.optionItem:hover {
+  background-color: #333;
+}
+
+.checkboxInput {
+  cursor: pointer;
+  width: 15px;
+  height: 15px;
+  accent-color: #4ecca3; /* Use theme color for checkbox */
+}
+
+.checkboxLabel {
+  flex-grow: 1;
+  cursor: pointer;
+  user-select: none;
+  color: #ddd;
+}
+
+/* NEW: Search Input Styles */
+.searchContainer {
+  padding: 8px 12px;
+  border-bottom: 1px solid #444;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #333;
+  color: #eee;
+  font-size: 0.9em;
+  box-sizing: border-box; /* Include padding/border in width */
+}
+
+.searchInput::placeholder {
+  color: #888;
+}
+
+/* Style for "No options found" message */
+.noOptions {
+  padding: 10px 12px;
+  color: #888;
+  font-style: italic;
+  text-align: center;
+} 

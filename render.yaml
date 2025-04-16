@@ -1,0 +1,42 @@
+services:
+  # Backend service
+  - type: web
+    name: neo-future-dashboard-backend
+    env: python
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: true
+      - key: PYTHONPATH
+        value: ./backend
+      - key: PORT
+        value: 8001
+    headers:
+      - path: /*
+        name: Strict-Transport-Security
+        value: max-age=31536000; includeSubDomains
+
+  # Frontend service
+  - type: web
+    name: neo-future-dashboard-frontend
+    env: node
+    plan: free
+    nodeVersion: 16
+    buildCommand: cd frontend && ./deploy.sh
+    startCommand: cd frontend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          name: neo-future-dashboard-backend
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
+    headers:
+      - path: /*
+        name: Strict-Transport-Security
+        value: max-age=31536000; includeSubDomains

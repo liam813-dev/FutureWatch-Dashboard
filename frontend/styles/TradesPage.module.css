@@ -1,0 +1,85 @@
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.mainContent {
+  flex-grow: 1;
+  padding: 1.5rem 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.pageTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--color-text-primary, #eee);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.error {
+  color: var(--color-negative, #dc3545);
+  background-color: rgba(220, 53, 69, 0.1);
+  border: 1px solid var(--color-negative, #dc3545);
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.contentGrid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "trades trades trades trades trades trades options options options options options options"
+    "liq liq liq liq liq liq heatmap heatmap heatmap heatmap heatmap heatmap";
+}
+
+.mainTradeSection {
+  grid-area: trades;
+  min-height: 500px;
+}
+
+.optionsSection {
+  grid-area: options;
+  min-height: 500px;
+}
+
+.liquidationsSection {
+  grid-area: liq;
+  min-height: 400px;
+}
+
+.heatmapSection {
+  grid-area: heatmap;
+  min-height: 400px;
+}
+
+/* Responsive layout */
+@media (max-width: 1100px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "trades"
+      "options"
+      "liq"
+      "heatmap";
+  }
+  
+  .mainContent {
+    padding: 1rem;
+  }
+  
+  .mainTradeSection,
+  .optionsSection,
+  .liquidationsSection,
+  .heatmapSection {
+    min-height: auto;
+  }
+} 

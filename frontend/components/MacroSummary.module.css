@@ -1,0 +1,67 @@
+/* MacroSummary.module.css */
+
+.macroContainer {
+  padding: 1rem;
+  font-size: 0.9em;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 1rem; /* Slightly smaller than card titles */
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--accent-color, #4ecca3);
+}
+
+.grid {
+  display: grid;
+  gap: 0.75rem;
+  /* Adjust columns as needed, maybe single column on small screens */
+  grid-template-columns: 1fr; /* Start with single column */
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color-light, #333);
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.label {
+  color: var(--text-secondary-color, #aaa);
+  font-weight: 500;
+}
+
+.valueText {
+  color: var(--text-primary-color, #eee);
+  font-weight: 600;
+  text-align: right;
+}
+
+.dateText {
+  font-size: 0.85em;
+  color: #888; /* Dimmer color for date */
+  margin-left: 0.3em;
+}
+
+.errorText,
+.loadingText {
+  color: #888;
+  font-style: italic;
+  text-align: right;
+}
+
+/* Optional: Media query for wider screens */
+@media (min-width: 768px) {
+  .grid {
+    /* Example: Switch to 2 columns if desired */
+    /* grid-template-columns: 1fr 1fr; */
+  }
+} 

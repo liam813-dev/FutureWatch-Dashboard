@@ -1,0 +1,301 @@
+.optionsTrackerContainer {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.header h2 {
+  color: var(--color-text-primary);
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.statsContainer {
+  display: flex;
+  gap: 1rem;
+}
+
+.stat {
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--border-radius-sm);
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+}
+
+.statLabel {
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statValue {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+}
+
+.filtersContainer {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  padding: 0.5rem 0 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 120px;
+}
+
+.filterGroup label {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.select {
+  background-color: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  border-radius: var(--border-radius-sm);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23828995' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 16px;
+  padding-right: 2rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.select:hover, .select:focus {
+  border-color: var(--color-accent);
+  outline: none;
+}
+
+.resetButton {
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.resetButton:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background-color: rgba(var(--color-accent-rgb), 0.1);
+}
+
+.tableContainer {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  position: relative;
+}
+
+.optionsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.optionsTable thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: var(--color-bg-tertiary);
+}
+
+.optionsTable th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.optionsTable td {
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.optionsTable tr:last-child td {
+  border-bottom: none;
+}
+
+.optionRow {
+  transition: background-color var(--transition-fast);
+}
+
+.optionRow:hover {
+  background-color: var(--color-bg-tertiary);
+}
+
+.expiringSoon {
+  background-color: rgba(var(--color-warning-rgb), 0.1);
+}
+
+.expiringSoon:hover {
+  background-color: rgba(var(--color-warning-rgb), 0.15);
+}
+
+.instrumentName {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.expiryDate {
+  font-family: var(--font-mono);
+}
+
+.strike {
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
+
+.optionType {
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.call {
+  color: var(--color-positive);
+}
+
+.put {
+  color: var(--color-negative);
+}
+
+.loadingContainer, .errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  height: 200px;
+  color: var(--color-text-secondary);
+}
+
+.spinner {
+  border: 3px solid rgba(var(--color-accent-rgb), 0.1);
+  border-radius: 50%;
+  border-top: 3px solid var(--color-accent);
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.errorMessage {
+  color: var(--color-negative);
+  text-align: center;
+}
+
+.retryButton {
+  background-color: var(--color-negative);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.retryButton:hover {
+  background-color: var(--color-negative-dark, #d32f2f);
+}
+
+.noData {
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding: 2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .optionsTrackerContainer {
+    padding: 1rem;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .statsContainer {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .filtersContainer {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .filterGroup {
+    width: 100%;
+  }
+  
+  .resetButton {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  
+  .tableContainer {
+    overflow-x: auto;
+  }
+  
+  .optionsTable th, .optionsTable td {
+    padding: 0.5rem;
+  }
+} 

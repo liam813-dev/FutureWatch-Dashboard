@@ -1,0 +1,209 @@
+.activityContainer {
+  width: 100%;
+  background: var(--color-bg-secondary);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+  position: relative;
+}
+
+.activityHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: rgba(var(--color-bg-secondary-rgb), 0.8);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.activityHeader h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.eventCount {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  padding: 0.2rem 0.5rem;
+  background-color: rgba(var(--color-bg-primary-rgb), 0.6);
+  border-radius: 12px;
+}
+
+.activityList {
+  max-height: 300px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-accent) var(--color-bg-secondary);
+}
+
+.activityList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.activityList::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+.activityList::-webkit-scrollbar-thumb {
+  background-color: var(--color-accent);
+  border-radius: 6px;
+}
+
+.activityItem {
+  display: flex;
+  align-items: flex-start;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  background-color: rgba(var(--color-bg-secondary-rgb), 0.5);
+  transition: background-color 0.2s ease;
+}
+
+.activityItem:last-child {
+  border-bottom: none;
+}
+
+.activityItem:hover {
+  background-color: rgba(var(--color-bg-primary-rgb), 0.6);
+}
+
+.activityIcon {
+  font-size: 1.2rem;
+  margin-right: 0.75rem;
+  margin-top: 0.1rem;
+}
+
+.activityContent {
+  flex: 1;
+}
+
+.activityHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  margin-bottom: 0.25rem;
+  border-bottom: none;
+  background: none;
+}
+
+.activitySymbol {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  font-family: 'Orbitron', sans-serif;
+}
+
+.activityExchange {
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+  background-color: rgba(var(--color-bg-primary-rgb), 0.4);
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+}
+
+.activityDetails {
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+  color: var(--color-text-primary);
+}
+
+.activityMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.activityTime {
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.activityValue {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+/* Event type styling */
+.liquidation {
+  border-left: 3px solid var(--color-negative);
+}
+
+.price_alert {
+  border-left: 3px solid var(--color-warning);
+}
+
+.funding {
+  border-left: 3px solid var(--color-positive);
+}
+
+.whale {
+  border-left: 3px solid var(--color-accent);
+}
+
+/* Direction styling */
+.liquidation.long .activityValue {
+  color: var(--color-negative);
+}
+
+.liquidation.short .activityValue {
+  color: var(--color-positive);
+}
+
+.activityLoader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 180px;
+}
+
+.activityLoader span {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin: 0 5px;
+  background-color: var(--color-accent);
+  border-radius: 50%;
+  animation: pulse 1.4s infinite ease-in-out both;
+}
+
+.activityLoader span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.activityLoader span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes pulse {
+  0%, 80%, 100% { 
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.activityError {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 180px;
+  color: var(--color-negative);
+  background-color: rgba(var(--color-negative-rgb), 0.1);
+}
+
+.noActivity {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 180px;
+  color: var(--color-text-secondary);
+  font-style: italic;
+} 
