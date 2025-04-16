@@ -33,7 +33,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({ opacity = 0.6 }
 
     // Particle system
     const particles: Particle[] = [];
-    const particleCount = 50;
+    const particleCount = 80;
 
     class Particle {
       x: number;
@@ -51,8 +51,8 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({ opacity = 0.6 }
         this.x = Math.random() * width;
         this.y = Math.random() * height;
         this.size = Math.random() * 2 + 1;
-        this.speedX = (Math.random() - 0.5) * 2;
-        this.speedY = (Math.random() - 0.5) * 2;
+        this.speedX = (Math.random() - 0.5) * 3.0;
+        this.speedY = (Math.random() - 0.5) * 3.0;
         this.opacity = Math.random() * 0.5 + 0.2;
         this.color = `rgba(0, 224, 255, ${this.opacity})`;
       }

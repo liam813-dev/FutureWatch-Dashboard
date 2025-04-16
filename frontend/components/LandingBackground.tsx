@@ -30,7 +30,7 @@ const LandingBackground: React.FC<LandingBackgroundProps> = ({ opacity = 0.5 }) 
 
     // Particle system
     const particles: Particle[] = [];
-    const particleCount = 40;
+    const particleCount = 80;
     const baseHue = 210; // Blue base color
     let mouseX = 0;
     let mouseY = 0;
@@ -55,8 +55,8 @@ const LandingBackground: React.FC<LandingBackgroundProps> = ({ opacity = 0.5 }) 
         this.x = Math.random() * width;
         this.y = Math.random() * height;
         this.size = Math.random() * 2 + 1;
-        this.speedX = (Math.random() - 0.5) * 0.5;
-        this.speedY = (Math.random() - 0.5) * 0.5;
+        this.speedX = (Math.random() - 0.5) * 1.0;
+        this.speedY = (Math.random() - 0.5) * 1.0;
         this.hue = baseHue + Math.random() * 30 - 15;
         this.targetX = this.x;
         this.targetY = this.y;
