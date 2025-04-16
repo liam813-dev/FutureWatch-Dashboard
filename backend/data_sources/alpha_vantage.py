@@ -3,7 +3,7 @@ import asyncio
 import logging
 import os
 from typing import Dict, Optional, Tuple
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception, wait_base
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception
 
 logger = logging.getLogger(__name__)
 
@@ -31,35 +31,37 @@ def _should_retry_alpha_vantage(exception) -> bool:
     logger.error(f"Not retrying Alpha Vantage call for exception: {type(exception)}")
     return False
 
-class _wait_with_retry_after(wait_base):
-    """Custom wait strategy respecting Retry-After header, falling back to exponential."""
-    def __init__(self, fallback):
-        self.fallback = fallback
+# Custom wait strategy function
+def _wait_alpha_vantage_retry_after(retry_state):
+    exc = retry_state.outcome.exception()
+    retry_after = None
+    if isinstance(exc, aiohttp.ClientResponseError) and exc.status == 429:
+        retry_after_str = exc.headers.get('Retry-After')
+        if retry_after_str:
+            try:
+                retry_after = int(retry_after_str)
+                logger.info(f"Respecting Retry-After header: waiting {retry_after} seconds.")
+            except ValueError:
+                logger.warning(f"Could not parse Retry-After header: {retry_after_str}")
+    
+    # If Retry-After is valid, return it, otherwise use exponential backoff
+    if retry_after is not None and retry_after >= 0:
+        return retry_after
+    else:
+        # Calculate exponential backoff using tenacity's internal mechanism if possible,
+        # or fallback to a simple calculation. Here's a basic version:
+        base_wait = 2  # min wait
+        multiplier = 1
+        max_wait = 10
+        current_attempt = retry_state.attempt_number
+        calculated_wait = min(max_wait, base_wait * (multiplier ** (current_attempt -1)))
+        logger.info(f"No Retry-After header or invalid. Using calculated backoff: {calculated_wait}s")
+        return calculated_wait
 
-    def __call__(self, retry_state):
-        exc = retry_state.outcome.exception()
-        retry_after = None
-
-        if isinstance(exc, aiohttp.ClientResponseError) and exc.status == 429:
-            retry_after_str = exc.headers.get('Retry-After')
-            if retry_after_str:
-                try:
-                    retry_after = int(retry_after_str) # AlphaVantage likely uses seconds
-                    logger.info(f"Respecting Retry-After header: waiting {retry_after} seconds.")
-                except ValueError:
-                    logger.warning(f"Could not parse Retry-After header: {retry_after_str}")
-                    # Could add HTTP date parsing here if needed
-
-        if retry_after is not None and retry_after >= 0:
-             return retry_after # Wait the specified time
-        else:
-            # Use the fallback (e.g., exponential backoff)
-            return self.fallback(retry_state)
-
-# Define the retry decorator
+# Define the retry decorator using the custom wait function
 alpha_vantage_retry_decorator = retry(
     stop=stop_after_attempt(3),
-    wait=_wait_with_retry_after(fallback=wait_exponential(multiplier=1, min=2, max=10)),
+    wait=_wait_alpha_vantage_retry_after, # Use the custom function directly
     retry=retry_if_exception(_should_retry_alpha_vantage),
     reraise=True # Reraise the exception if all retries fail
 )
