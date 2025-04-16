@@ -4,8 +4,9 @@ from sqlalchemy.ext.declarative import declarative_base
 import os
 from typing import AsyncGenerator
 
-# Get database URL from environment variable
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql+asyncpg://postgres:postgres@localhost/futurewatch")
+# Get database URL from environment variable and convert to asyncpg format
+raw_url = os.environ.get("DATABASE_URL", "postgresql://postgres:postgres@localhost/futurewatch")
+DATABASE_URL = raw_url.replace("postgresql://", "postgresql+asyncpg://")
 
 # Create async engine with connection pool configuration
 engine = create_async_engine(

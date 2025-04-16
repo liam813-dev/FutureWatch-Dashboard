@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Float, DateTime, func, Integer, Index
-from backend.app.core.database import Base
+from app.core.database import Base
 
 class BubbleOutlier(Base):
     __tablename__ = "bubble_outliers"

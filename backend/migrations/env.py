@@ -21,15 +21,15 @@ from app.models import (
     TradeLarge,
     MacroPoint,
     BubbleOutlier,
+    StablecoinFlow,
 )
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-# Get the database URL from environment variable and convert to sync URL
-db_url = os.environ.get("DATABASE_URL", "").replace("+asyncpg", "")
-config.set_main_option("sqlalchemy.url", db_url)
+# Use SQLite for local migrations
+config.set_main_option("sqlalchemy.url", "sqlite:///migration_test.db")
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -65,11 +65,8 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
-    configuration = config.get_section(config.config_ini_section)
-    configuration["sqlalchemy.url"] = db_url
-    
     connectable = create_engine(
-        configuration["sqlalchemy.url"],
+        config.get_main_option("sqlalchemy.url"),
         poolclass=pool.NullPool,
     )
 

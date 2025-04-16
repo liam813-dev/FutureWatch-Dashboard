@@ -10,13 +10,14 @@ from app.models.liquidation import Liquidation
 from app.models.trade_large import TradeLarge
 from app.models.macro_point import MacroPoint
 from app.models.bubble_outlier import BubbleOutlier
+from app.models.stablecoin_flow import StablecoinFlow
 
 router = APIRouter()
 
 @router.get("/api/data")
 async def get_dashboard_data(db: AsyncSession = Depends(get_db)):
     """
-    Get dashboard data combining the latest snapshots, macro data, and bubble outliers.
+    Get dashboard data combining the latest snapshots, macro data, bubble outliers, and stablecoin flows.
     """
     try:
         # Get the latest snapshot for each symbol
@@ -50,6 +51,11 @@ async def get_dashboard_data(db: AsyncSession = Depends(get_db)):
         trades_query = select(TradeLarge).order_by(TradeLarge.timestamp.desc()).limit(50)
         result = await db.execute(trades_query)
         recent_trades = result.scalars().all()
+        
+        # Get latest stablecoin flow data
+        stablecoin_query = select(StablecoinFlow).order_by(StablecoinFlow.date.desc()).limit(1)
+        result = await db.execute(stablecoin_query)
+        latest_stablecoin_flow = result.scalar()
         
         # Format market data
         market_data = {}
@@ -106,6 +112,8 @@ async def get_dashboard_data(db: AsyncSession = Depends(get_db)):
             "macro_data": formatted_macro_data,
             "recent_liquidations": formatted_liquidations,
             "recent_large_trades": formatted_trades,
+            "stablecoin_flow_24h": latest_stablecoin_flow.net if latest_stablecoin_flow else None,
+            "stablecoin_circ": latest_stablecoin_flow.circulating if latest_stablecoin_flow else None,
             "timestamp": datetime.utcnow().isoformat(),
         }
         

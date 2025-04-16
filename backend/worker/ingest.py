@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from data_sources.hyperliquid import fetch_market_data
 from data_sources.liquidations import get_liquidations_data
 from data_sources.trades import get_recent_large_trades
+from data_sources.stablecoins import fetch_daily_net_flows
 from app.core.database import SessionLocal, engine
 from app.models.asset import Asset
 from app.models.market_snapshot import MarketSnapshot
@@ -20,6 +21,7 @@ from app.models.liquidation import Liquidation
 from app.models.trade_large import TradeLarge
 from app.models.macro_point import MacroPoint
 from app.models.bubble_outlier import BubbleOutlier
+from app.models.stablecoin_flow import StablecoinFlow
 
 # Configure logging
 logging.basicConfig(
@@ -232,6 +234,30 @@ async def upsert_bubble_outliers(bubble_data: List[Dict[str, Any]], session) -> 
         await session.execute(stmt)
 
 
+async def upsert_stablecoin_flows(flow_data: List[Dict[str, Any]], session) -> None:
+    """Upsert stablecoin flow data into the database."""
+    logger.info(f"Upserting {len(flow_data)} stablecoin flow records")
+    
+    for flow in flow_data:
+        # Create the upsert statement for PostgreSQL
+        stmt = insert(StablecoinFlow).values(
+            date=flow["date"],
+            net=flow["net"],
+            circulating=flow["circulating"]
+        )
+        
+        # On conflict, update all fields except the primary key
+        stmt = stmt.on_conflict_do_update(
+            index_elements=["date"],
+            set_={
+                "net": flow["net"],
+                "circulating": flow["circulating"]
+            }
+        )
+        
+        await session.execute(stmt)
+
+
 async def purge_old_data(session) -> None:
     """Delete data older than retention periods."""
     logger.info("Purging old data based on retention periods")
@@ -303,99 +329,43 @@ async def process_market_data(market_data: Dict[str, Dict[str, Any]], session) -
 
 
 async def ingest_loop():
-    """Main ingest loop that runs continuously."""
-    logger.info("Starting data ingest loop")
+    """Main ingestion loop."""
+    logger.info("Starting ingestion loop")
     
     while True:
         try:
-            # Create a new session for this loop iteration
             async with SessionLocal() as session:
-                async with session.begin():
-                    # 1. Fetch market data
-                    market_data_result = await fetch_market_data()
-                    
-                    if market_data_result and isinstance(market_data_result, dict):
-                        logger.info(f"Market data retrieved: {', '.join(f'{k}=${v.get('price', 'N/A')}' for k, v in market_data_result.items() if k != 'timestamp')}")
-                        await process_market_data(market_data_result, session)
-                    else:
-                        logger.warning("Market data not in expected format, skipping")
-                    
-                    # 2. Fetch liquidation data
-                    try:
-                        liquidation_result = get_liquidations_data()
-                        
-                        # Process and standardize liquidations
-                        standardized_liquidations = []
-                        
-                        if isinstance(liquidation_result, dict) and 'liquidations' in liquidation_result:
-                            liquidations_by_symbol = liquidation_result.get("liquidations", {})
-                            
-                            # Flatten the nested structure
-                            for symbol, symbol_data in liquidations_by_symbol.items():
-                                longs = symbol_data.get("longs", [])
-                                shorts = symbol_data.get("shorts", [])
-                                
-                                for liq in longs + shorts:
-                                    # Standardize format for database
-                                    try:
-                                        std_liq = {
-                                            "coin": liq.get("coin", "").replace("USDT", "") or liq.get("symbol", "").replace("USDT", ""),
-                                            "side": liq.get("side", "").lower(),
-                                            "size": float(liq.get("quantity", 0) or liq.get("size", 0)),
-                                            "price": float(liq.get("price", 0)),
-                                            "value_usd": float(liq.get("value_usd", 0) or liq.get("value", 0)),
-                                            "timestamp": liq.get("timestamp", "") or liq.get("time", "")
-                                        }
-                                        standardized_liquidations.append(std_liq)
-                                    except Exception as e:
-                                        logger.warning(f"Error standardizing liquidation: {e} | Data: {liq}")
-                        
-                        if standardized_liquidations:
-                            await bulk_insert_liquidations(standardized_liquidations, session)
-                    except Exception as liq_err:
-                        logger.error(f"Error processing liquidation data: {liq_err}", exc_info=True)
-                    
-                    # 3. Fetch large trades
-                    try:
-                        raw_trades = get_recent_large_trades()
-                        
-                        # Standardize trades
-                        standardized_trades = []
-                        for trade in raw_trades:
-                            try:
-                                std_trade = {
-                                    "symbol": trade.get("symbol", "").replace("USDT", ""),
-                                    "side": trade.get("side", "").lower(),
-                                    "price": float(trade.get("price", 0)),
-                                    "quantity": float(trade.get("quantity", 0)),
-                                    "value_usd": float(trade.get("value_usd", 0)),
-                                    "time": trade.get("time", "")
-                                }
-                                standardized_trades.append(std_trade)
-                            except Exception as e:
-                                logger.warning(f"Error standardizing trade: {e} | Data: {trade}")
-                        
-                        if standardized_trades:
-                            await bulk_insert_trades(standardized_trades, session)
-                    except Exception as trades_err:
-                        logger.error(f"Error fetching trade data: {trades_err}", exc_info=True)
-                    
-                    # 4. Process bubble outliers (assuming detection is done elsewhere)
-                    # This is a placeholder for bubble outlier detection and insertion
-                    
-                    # 5. Purge old data based on retention periods
-                    await purge_old_data(session)
+                # Fetch market data
+                market_data = await fetch_market_data()
+                await process_market_data(market_data, session)
                 
-                # Commit the transaction
+                # Fetch and store liquidations
+                liquidations = await get_liquidations_data()
+                await bulk_insert_liquidations(liquidations, session)
+                
+                # Fetch and store large trades
+                trades = await get_recent_large_trades()
+                await bulk_insert_trades(trades, session)
+                
+                # Fetch and store stablecoin flows
+                stablecoin_flows = await fetch_daily_net_flows()
+                await upsert_stablecoin_flows(stablecoin_flows, session)
+                
+                # Purge old data
+                await purge_old_data(session)
+                
+                # Commit all changes
                 await session.commit()
-                logger.info("Data ingest cycle completed successfully")
+                
+                logger.info("Successfully processed and stored data")
                 
         except Exception as e:
-            logger.error(f"Error in ingest loop: {str(e)}", exc_info=True)
+            logger.error(f"Error in ingestion loop: {str(e)}")
+            # Log the full traceback for debugging
+            logger.exception("Full traceback:")
         
-        # Wait for the next cycle (60 seconds for market data and bubble detection)
-        logger.info("Waiting 60 seconds until next ingest cycle")
-        await asyncio.sleep(60)
+        # Wait before next iteration
+        await asyncio.sleep(60)  # 1 minute delay
 
 
 if __name__ == "__main__":
