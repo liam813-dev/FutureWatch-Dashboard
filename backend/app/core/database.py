@@ -1,35 +1,28 @@
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-import os
-from typing import AsyncGenerator
+import os, pathlib
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy.orm import DeclarativeBase
 
-# Get database URL from environment variable and convert to asyncpg format
-raw_url = os.environ.get("DATABASE_URL", "postgresql://postgres:postgres@localhost/futurewatch")
-DATABASE_URL = raw_url.replace("postgresql://", "postgresql+asyncpg://")
+DEFAULT_SQLITE_URL = "sqlite+aiosqlite:///migration_test.db"
+url = os.getenv("DATABASE_URL", DEFAULT_SQLITE_URL)
 
-# Create async engine with connection pool configuration
-engine = create_async_engine(
-    DATABASE_URL,
-    pool_size=5,
-    max_overflow=10,
-    echo=False,
-)
+# Convert postgres:// → postgresql+asyncpg:// for SQLAlchemy
+if url.startswith("postgres://"):
+    url = url.replace("postgres://", "postgresql+asyncpg://", 1)
 
-# Create async session maker
-SessionLocal = sessionmaker(
-    bind=engine, 
-    expire_on_commit=False,
-    autocommit=False,
-    autoflush=False,
-    class_=AsyncSession,
-)
+# Configure engine based on database type
+if url.startswith("postgresql"):
+    engine = create_async_engine(url, pool_size=5, max_overflow=10, echo=False)
+else:
+    # SQLite doesn't support pool_size and max_overflow
+    engine = create_async_engine(url, echo=False)
 
-# Base class for models
-Base = declarative_base()
+SessionLocal = async_sessionmaker(engine, expire_on_commit=False)
+
+class Base(DeclarativeBase):
+    pass
 
 # Dependency to use in FastAPI endpoints
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
+async def get_db():
     async with SessionLocal() as session:
         try:
             yield session

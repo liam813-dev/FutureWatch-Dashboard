@@ -64,6 +64,8 @@ export interface DashboardData {
   recent_liquidations: RecentLiquidation[];
   recent_large_trades: RecentTrade[];
   macro_data: MacroData | null;
+  stablecoin_flow_24h: number | null;
+  stablecoin_circ: number | null;
 }
 
 export interface ApiResponse {

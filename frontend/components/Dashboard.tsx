@@ -29,6 +29,7 @@ import MacroSummary from '@/components/MacroSummary';
 import AssetEvents from '@/components/AssetEvents';
 import OptionsTracker from '@/components/OptionsTracker';
 import TradeHeatmap from '@/components/TradeHeatmap';
+import StablecoinCard from '@/components/StablecoinCard';
 
 // RGL setup
 const ResponsiveReactGridLayout = Responsive as any; // Type assertion to avoid TS error
@@ -268,6 +269,16 @@ const Dashboard: React.FC = () => {
       category: 'trades',
       priority: 5,
       component: () => <TradeHeatmap marketData={data?.data?.market_data || defaultMarketData} isLoading={isLoading} />
+    },
+    'stablecoinCard': {
+      title: 'Stablecoin Flows',
+      description: '24-hour stablecoin issuance and supply',
+      component: () => <StablecoinCard 
+        flow24h={data?.data?.stablecoin_flow_24h || null}
+        circulating={data?.data?.stablecoin_circ || null}
+      />,
+      category: 'market',
+      priority: 4
     },
   };
 

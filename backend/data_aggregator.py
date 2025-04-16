@@ -276,28 +276,42 @@ def convert_to_market_data(data: Dict[str, Dict[str, float]]) -> MarketData:
         btc_data = data.get("btc", {})
         btc_metric = MarketMetric(
             price=btc_data.get("price", 0.0),
+            bid_price=btc_data.get("bid_price"),
+            bid_qty=btc_data.get("bid_qty"),
+            ask_price=btc_data.get("ask_price"),
+            ask_qty=btc_data.get("ask_qty"),
+            spread=btc_data.get("spread"),
+            spread_percent=btc_data.get("spread_percent"),
+            depth=btc_data.get("depth"),
             volume_24h=btc_data.get("volume_24h", 0.0),
             open_interest=btc_data.get("open_interest", 0.0),
             funding_rate=btc_data.get("funding_rate", 0.0),
             price_change_percent=btc_data.get("price_change_percent", 0.0),
-            market_cap=btc_data.get("market_cap", 0.0),
-            dominance=btc_data.get("dominance", 0.0),
-            volatility_7d=btc_data.get("volatility_7d", 0.0),
-            volatility_30d=btc_data.get("volatility_30d", 0.0)
+            market_cap=btc_data.get("market_cap"),
+            dominance=btc_data.get("dominance"),
+            volatility_7d=btc_data.get("volatility_7d"),
+            volatility_30d=btc_data.get("volatility_30d")
         )
 
         # Create ETH metric
         eth_data = data.get("eth", {})
         eth_metric = MarketMetric(
             price=eth_data.get("price", 0.0),
+            bid_price=eth_data.get("bid_price"),
+            bid_qty=eth_data.get("bid_qty"),
+            ask_price=eth_data.get("ask_price"),
+            ask_qty=eth_data.get("ask_qty"),
+            spread=eth_data.get("spread"),
+            spread_percent=eth_data.get("spread_percent"),
+            depth=eth_data.get("depth"),
             volume_24h=eth_data.get("volume_24h", 0.0),
             open_interest=eth_data.get("open_interest", 0.0),
             funding_rate=eth_data.get("funding_rate", 0.0),
             price_change_percent=eth_data.get("price_change_percent", 0.0),
-            market_cap=eth_data.get("market_cap", 0.0),
-            dominance=eth_data.get("dominance", 0.0),
-            volatility_7d=eth_data.get("volatility_7d", 0.0),
-            volatility_30d=eth_data.get("volatility_30d", 0.0)
+            market_cap=eth_data.get("market_cap"),
+            dominance=eth_data.get("dominance"),
+            volatility_7d=eth_data.get("volatility_7d"),
+            volatility_30d=eth_data.get("volatility_30d")
         )
 
         # Debug log field counts
