@@ -17,6 +17,7 @@ class MarketSnapshot(Base):
     percent_change_1h = Column(Float, nullable=True)
     percent_change_24h = Column(Float, nullable=True)
     percent_change_7d = Column(Float, nullable=True)
+    funding_rate = Column(Float, nullable=True)
     ts_created = Column(DateTime, default=func.now())
     
     # Create indexes for efficient querying

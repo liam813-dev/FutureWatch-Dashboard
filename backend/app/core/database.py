@@ -2,7 +2,7 @@ import os, pathlib
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 
-DEFAULT_SQLITE_URL = "sqlite+aiosqlite:///migration_test.db"
+DEFAULT_SQLITE_URL = "sqlite+aiosqlite:///app.db"
 url = os.getenv("DATABASE_URL", DEFAULT_SQLITE_URL)
 
 # Convert postgres:// → postgresql+asyncpg:// for SQLAlchemy

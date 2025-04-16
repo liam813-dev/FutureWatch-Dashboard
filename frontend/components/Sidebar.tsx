@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAppContext } from '@/contexts/AppContext';
 import IconButton from '@/components/common/IconButton';
-import { FiChevronLeft, FiChevronRight, FiAlertCircle, FiBarChart2, FiSettings, FiBell, FiTrendingUp, FiDollarSign, FiActivity } from 'react-icons/fi';
+import { FiChevronLeft, FiChevronRight, FiAlertCircle, FiBarChart2, FiSettings, FiBell, FiTrendingUp, FiDollarSign, FiActivity, FiZap } from 'react-icons/fi';
 import styles from '@/styles/components/Sidebar.module.css';
 import { useMarketData } from '@/hooks/useMarketData';
 import { useWebSocket } from '../contexts/WebSocketContext';
@@ -48,7 +48,12 @@ export const Sidebar: React.FC = () => {
   const recentLiquidations = dashboardData?.recent_liquidations || [];
 
   // Format numbers
-  const formatPrice = (price: number) => `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formatPrice = (price: number | undefined | null): string => {
+    if (typeof price !== 'number' || isNaN(price)) {
+      return '$--.--'; // Return a placeholder if price is not a valid number
+    }
+    return `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
   const formatVolume = (volume: number) => `$${(volume / 1000000000).toFixed(2)}B`;
 
   return (

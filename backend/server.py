@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from datetime import datetime
-from typing import List, Optional, Tuple, Dict, Any
+from typing import List, Optional, Tuple, Dict, Any, Union
 import os
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
@@ -218,28 +218,64 @@ async def fetch_and_cache_macro_data():
     
     # Unpack results, handling potential errors
     cpi_res, fed_res, unemp_res, wti_res, brent_res, ng_res, copper_res, corn_res, wheat_res, coffee_res, sugar_res = \
-        [(r if isinstance(r, tuple) else None) for r in results] # Convert exceptions/None to None
+        [(r if isinstance(r, tuple) else r) for r in results] # Keep exceptions as is, tuples as is
 
-    def create_point(name: str, result: Optional[Tuple[str, str]]) -> MacroDataPoint:
-        return MacroDataPoint(
-            name=name,
-            date=result[0] if result else None,
-            value=result[1] if result else None,
-            error=None if result else "Failed/RateLimit"
-        )
+    def create_point(name: str, result: Optional[Union[Tuple[str, str], Exception]]) -> Optional[MacroDataPoint]:
+        """Tries to create a MacroDataPoint from fetch result. Handles errors.
+        
+        Args:
+            name: Name of the data point (e.g., 'CPI')
+            result: Output from fetch function - Tuple(date_str, value_str), None, or Exception.
 
+        Returns:
+            MacroDataPoint if successful, None otherwise.
+        """
+        if isinstance(result, Exception):
+            logger.warning(f"Failed to fetch {name}: {result}")
+            return None
+        elif result is None:
+            logger.warning(f"No data received for {name} (likely rate limited or API error).")
+            return None
+        elif isinstance(result, tuple) and len(result) == 2:
+            date_str, value_str = result
+            try:
+                # Attempt to parse date and value
+                timestamp_dt = datetime.strptime(date_str, '%Y-%m-%d')
+                value_float = float(value_str)
+                return MacroDataPoint(timestamp=timestamp_dt, value=value_float)
+            except (ValueError, TypeError) as e:
+                logger.error(f"Error parsing data for {name}: Date='{date_str}', Value='{value_str}'. Error: {e}")
+                return None
+        else:
+            logger.error(f"Unexpected result format for {name}: {result}")
+            return None
+
+    # Create points, handling None returns
+    cpi_point = create_point("CPI (Monthly)", cpi_res)
+    fed_point = create_point("Fed Rate (Daily)", fed_res)
+    unemp_point = create_point("Unemployment (Monthly)", unemp_res)
+    wti_point = create_point("WTI Oil (Daily)", wti_res)
+    brent_point = create_point("Brent Oil (Daily)", brent_res)
+    ng_point = create_point("Natural Gas (Daily)", ng_res)
+    copper_point = create_point("Copper (Daily)", copper_res)
+    corn_point = create_point("Corn (Daily)", corn_res)
+    wheat_point = create_point("Wheat (Daily)", wheat_res)
+    coffee_point = create_point("Coffee (Daily)", coffee_res)
+    sugar_point = create_point("Sugar (Daily)", sugar_res)
+
+    # Assign to cache, using None if creation failed
     macro_data_cache = MacroData(
-        cpi=create_point("CPI (Monthly)", cpi_res),
-        fed_rate=create_point("Fed Rate (Daily)", fed_res),
-        unemployment=create_point("Unemployment (Monthly)", unemp_res),
-        wti_oil=create_point("WTI Oil (Daily)", wti_res),
-        brent_oil=create_point("Brent Oil (Daily)", brent_res),
-        natural_gas=create_point("Natural Gas (Daily)", ng_res),
-        copper=create_point("Copper (Daily)", copper_res),
-        corn=create_point("Corn (Daily)", corn_res),
-        wheat=create_point("Wheat (Daily)", wheat_res),
-        coffee=create_point("Coffee (Daily)", coffee_res),
-        sugar=create_point("Sugar (Daily)", sugar_res)
+        cpi=cpi_point,
+        fed_rate=fed_point,
+        unemployment=unemp_point,
+        wti_oil=wti_point,
+        brent_oil=brent_point,
+        natural_gas=ng_point,
+        copper=copper_point,
+        corn=corn_point,
+        wheat=wheat_point,
+        coffee=coffee_point,
+        sugar=sugar_point
     )
     logger.info("Finished fetching macro & commodity data.")
 

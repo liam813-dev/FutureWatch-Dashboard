@@ -14,6 +14,7 @@ from data_sources.hyperliquid import fetch_market_data
 from data_sources.liquidations import get_liquidations_data
 from data_sources.trades import get_recent_large_trades
 from data_sources.stablecoins import fetch_daily_net_flows
+from data_sources.binance_utils import get_funding_rates
 from app.core.database import SessionLocal, engine
 from app.models.asset import Asset
 from app.models.market_snapshot import MarketSnapshot
@@ -99,6 +100,7 @@ async def bulk_insert_market_snapshots(snapshots_data: List[Dict[str, Any]], ses
             percent_change_1h=snapshot.get("percent_change_1h"),
             percent_change_24h=snapshot.get("percent_change_24h"),
             percent_change_7d=snapshot.get("percent_change_7d"),
+            funding_rate=snapshot.get("funding_rate"),
             ts_created=datetime.utcnow()
         ))
     
@@ -284,48 +286,43 @@ async def purge_old_data(session) -> None:
 
 
 async def process_market_data(market_data: Dict[str, Dict[str, Any]], session) -> None:
-    """Process market data and insert snapshots and update assets."""
-    assets_data = []
+    """Process and store market data."""
+    logger.info("Processing market data")
+    
+    # Fetch funding rates
+    try:
+        funding_rates = await get_funding_rates()
+        logger.info(f"Fetched funding rates for {len(funding_rates)} pairs")
+    except Exception as e:
+        logger.error(f"Error fetching funding rates: {e}")
+        funding_rates = {}
+    
+    # Prepare market snapshots
     snapshots_data = []
-    
-    # Current timestamp for all snapshots in this batch
-    now = datetime.utcnow()
-    
-    for symbol, metrics in market_data.items():
-        # Skip 'timestamp' key if present
-        if symbol == 'timestamp':
-            continue
-            
-        # Prepare asset data
-        asset_data = {
-            "symbol": symbol.upper(),
-            "name": symbol.upper(),  # Use better name if available
-            "market_cap": metrics.get("market_cap"),
-            "circulating_supply": None,  # Add if available
-            "max_supply": None,  # Add if available
+    for symbol, data in market_data.items():
+        snapshot = {
+            "symbol": symbol,
+            "timestamp": datetime.utcnow(),
+            "price": data["price"],
+            "open": data.get("open"),
+            "high": data.get("high"),
+            "low": data.get("low"),
+            "close": data.get("close"),
+            "volume": data.get("volume"),
+            "volume_24h": data.get("volume_24h"),
+            "percent_change_1h": data.get("percent_change_1h"),
+            "percent_change_24h": data.get("percent_change_24h"),
+            "percent_change_7d": data.get("percent_change_7d"),
+            "funding_rate": funding_rates.get(symbol)  # Add funding rate to snapshot
         }
-        assets_data.append(asset_data)
-        
-        # Prepare snapshot data
-        snapshot_data = {
-            "symbol": symbol.upper(),
-            "timestamp": now,
-            "price": metrics.get("price", 0.0),
-            "open": None,  # Add if available
-            "high": None,  # Add if available
-            "low": None,  # Add if available
-            "close": None,  # Add if available
-            "volume": metrics.get("volume", 0.0),
-            "volume_24h": metrics.get("volume_24h", 0.0),
-            "percent_change_1h": metrics.get("price_change_1h", 0.0),
-            "percent_change_24h": metrics.get("price_change_24h", 0.0),
-            "percent_change_7d": metrics.get("price_change_7d", 0.0),
-        }
-        snapshots_data.append(snapshot_data)
+        snapshots_data.append(snapshot)
     
-    # Upsert assets and insert snapshots
-    await upsert_assets(assets_data, session)
+    # Bulk insert market snapshots
     await bulk_insert_market_snapshots(snapshots_data, session)
+    
+    # Commit the transaction
+    await session.commit()
+    logger.info("Market data processing complete")
 
 
 async def ingest_loop():

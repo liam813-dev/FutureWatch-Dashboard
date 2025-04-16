@@ -182,14 +182,30 @@ async def gather_dashboard_data() -> DashboardData:
             standardized_trades = []
             for trade in raw_trades:
                 try:
-                    # Map fields to expected names
+                    # Convert timestamp string to datetime object
+                    # Attempt multiple formats if necessary
+                    timestamp_str = trade.get("time", "")
+                    timestamp_dt = None
+                    if timestamp_str:
+                        try:
+                            # Try ISO format with microseconds first
+                            timestamp_dt = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+                        except ValueError:
+                             try:
+                                # Try common format without microseconds
+                                timestamp_dt = datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%S')
+                             except ValueError:
+                                 logger.warning(f"Could not parse timestamp: {timestamp_str}")
+                                 continue # Skip this trade if timestamp is invalid
+
+                    # Map fields to expected names in RecentTrade model
                     std_trade = {
                         "symbol": trade.get("symbol", "").replace("USDT", ""),
-                        "side": trade.get("side", "").lower(),  # Standardize to lowercase
+                        "side": trade.get("side", "").lower(),
                         "price": float(trade.get("price", 0)),
-                        "quantity": float(trade.get("quantity", 0)),
-                        "value_usd": float(trade.get("value_usd", 0)),
-                        "time": trade.get("time", "")
+                        "size": float(trade.get("quantity", 0)), # Rename 'quantity' to 'size'
+                        "value_usd": float(trade.get("value_usd", 0)), # Uncommented to include value_usd
+                        "timestamp": timestamp_dt # Use parsed datetime object for 'timestamp'
                     }
                     standardized_trades.append(std_trade)
                 except Exception as e:

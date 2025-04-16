@@ -1,12 +1,14 @@
 import aiohttp
 import asyncio
 import logging
-from typing import List
+from typing import List, Dict, Optional
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
 BINANCE_API_URL = "https://api.binance.com/api/v3/ticker/24hr"
+BINANCE_FUTURES_API_URL = "https://fapi.binance.com/fapi/v1"
 TOP_N_SYMBOLS = 50
 
 # --- Tenacity Retry Configuration (Copied from alpha_vantage.py, adjust names if needed) --- 
@@ -107,3 +109,40 @@ async def get_top_symbols_from_binance(top_n: int = TOP_N_SYMBOLS) -> List[str]:
     # Return the extracted symbols or an empty list if processing failed after successful fetch
     # (Errors during fetch are reraised by tenacity or the except blocks above)
     return symbols 
+
+@binance_retry_decorator
+async def get_funding_rates() -> Dict[str, float]:
+    """
+    Fetch funding rates from Binance for all perpetual futures.
+    Returns a dictionary mapping symbol to funding rate.
+    """
+    try:
+        async with aiohttp.ClientSession() as session:
+            # Get all perpetual futures symbols
+            async with session.get("https://fapi.binance.com/fapi/v1/exchangeInfo") as response:
+                if response.status != 200:
+                    logger.error(f"Failed to get exchange info: {response.status}")
+                    return {}
+                
+                data = await response.json()
+                symbols = [s["symbol"] for s in data["symbols"] if s["contractType"] == "PERPETUAL"]
+                
+                # Get funding rates for all symbols
+                async with session.get("https://fapi.binance.com/fapi/v1/premiumIndex") as response:
+                    if response.status != 200:
+                        logger.error(f"Failed to get funding rates: {response.status}")
+                        return {}
+                    
+                    data = await response.json()
+                    funding_rates = {
+                        item["symbol"]: float(item["lastFundingRate"]) 
+                        for item in data 
+                        if item["symbol"] in symbols
+                    }
+                    
+                    logger.info(f"Successfully fetched funding rates for {len(funding_rates)} pairs")
+                    return funding_rates
+                    
+    except Exception as e:
+        logger.error(f"Error fetching funding rates: {e}")
+        return {} 

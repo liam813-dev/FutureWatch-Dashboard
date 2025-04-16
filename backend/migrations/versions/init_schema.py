@@ -51,6 +51,7 @@ def upgrade() -> None:
         sa.Column('percent_change_1h', sa.Float(), nullable=True),
         sa.Column('percent_change_24h', sa.Float(), nullable=True),
         sa.Column('percent_change_7d', sa.Float(), nullable=True),
+        sa.Column('funding_rate', sa.Float(), nullable=True),
         sa.Column('ts_created', sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint('id')
     )
