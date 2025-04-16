@@ -142,39 +142,51 @@ export function useAssetEvents(asset: string, limit: number = 30) {
     try {
       const result = await fetchAssetEvents(asset, limit, toTimestamp || undefined);
       
-      if (toTimestamp) {
-        // Append new events when loading more
-        console.log(`[useAssetEvents] Appending ${result.data.length} new events to existing ${events.length} events`);
-        setEvents(prev => [...prev, ...result.data]);
-      } else {
-        // Replace events when loading for the first time
-        console.log(`[useAssetEvents] Setting initial ${result.data.length} events`);
-        setEvents(result.data);
-      }
+      if (result && Array.isArray(result.data)) { 
+        if (toTimestamp) {
+          // Append new events when loading more
+          console.log(`[useAssetEvents] Appending ${result.data.length} new events to existing ${events.length} events`);
+          setEvents(prev => [...prev, ...result.data]);
+        } else {
+          // Replace events when loading for the first time
+          console.log(`[useAssetEvents] Setting initial ${result.data.length} events`);
+          setEvents(result.data);
+        }
       
-      // Check if there's a next page
-      if (result.metadata.next_page) {
-        const nextTimestamp = parseInt(
-          new URLSearchParams(new URL(result.metadata.next_page).search).get('to_ts') || '0'
-        );
-        console.log(`[useAssetEvents] Next page available with timestamp: ${nextTimestamp}`);
-        setNextPageTimestamp(nextTimestamp);
-        setHasMore(true);
+        // Check if there's a next page (using result.metadata)
+        if (result.metadata?.next_page) {
+          const nextTimestamp = parseInt(
+            new URLSearchParams(new URL(result.metadata.next_page).search).get('to_ts') || '0'
+          );
+          console.log(`[useAssetEvents] Next page available with timestamp: ${nextTimestamp}`);
+          setNextPageTimestamp(nextTimestamp);
+          setHasMore(true);
+        } else {
+          console.log(`[useAssetEvents] No more pages available`);
+          setHasMore(false);
+        }
       } else {
-        console.log(`[useAssetEvents] No more pages available`);
-        setHasMore(false);
+        // Handle cases where result or result.data is invalid/missing
+        console.warn(`[useAssetEvents] Invalid or missing data in API response for ${asset}. Result:`, result);
+        if (!toTimestamp) { // If initial load failed, set empty array
+            setEvents([]);
+        }
+        setHasMore(false); 
       }
+
     } catch (err) {
       console.error(`[useAssetEvents] Error in hook:`, err);
       setError(err instanceof Error ? err : new Error('Unknown error fetching asset events'));
+      setHasMore(false); // Ensure we don't try to load more on error
       
       // If in development and no events loaded yet, use sample data
-      if (process.env.NODE_ENV === 'development' && events.length === 0) {
-        console.log('[useAssetEvents] Using sample data in hook due to API error');
-        const sampleData = generateSampleData(asset);
-        setEvents(sampleData.data);
-        setHasMore(false);
-      }
+      // Note: The check above handles setting empty array on error for initial load
+      // if (process.env.NODE_ENV === 'development' && events.length === 0) {
+      //   console.log('[useAssetEvents] Using sample data in hook due to API error');
+      //   const sampleData = generateSampleData(asset);
+      //   setEvents(sampleData.data);
+      //   setHasMore(false);
+      // }
     } finally {
       setIsLoading(false);
     }
