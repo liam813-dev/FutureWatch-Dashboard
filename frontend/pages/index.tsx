@@ -118,8 +118,10 @@ const Home: React.FC = () => {
       <div className={styles.landingMain}>
         <div className={styles.heroContent}>
           <div className={styles.heroTextContainer}>
-            <h1 className={styles.heroTitle}>Master Market Flows with FutureWatch</h1>
-            <p className={styles.heroTagline}>No euphoria. No panic. Just data-driven crypto insights.</p>
+            <h1 className={styles.heroTitle}>Welcome to FutureWatch</h1>
+            <p className={styles.heroSubtitle}>
+              Real-time insights into market liquidations, trades, and options flow.
+            </p>
             
             <div className={styles.ctaButtons}>
               <Link href="/dashboard" className={styles.primaryButton}>
