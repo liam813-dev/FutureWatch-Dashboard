@@ -13,10 +13,6 @@ services:
         value: ./backend
       - key: PORT
         value: 8001
-    headers:
-      - path: /*
-        name: Strict-Transport-Security
-        value: max-age=31536000; includeSubDomains
 
   # Frontend service
   - type: web
@@ -35,7 +31,3 @@ services:
           name: neo-future-dashboard-backend
           type: web
           envVarKey: RENDER_EXTERNAL_URL
-    headers:
-      - path: /*
-        name: Strict-Transport-Security
-        value: max-age=31536000; includeSubDomains
