@@ -1,12 +1,16 @@
 import { ApiResponse } from '../types/data';
 
-export async function fetchDashboardData(): Promise<ApiResponse> {
-  const response = await fetch('/api/data');
-  if (!response.ok) {
-    throw new Error(`API error: ${response.status}`);
-  }
-  return await response.json();
-}
+// Determine the base API URL
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+
+// Remove the old unused fetch function
+// export async function fetchDashboardData(): Promise<ApiResponse> {
+//   const response = await fetch('/api/data');
+//   if (!response.ok) {
+//     throw new Error(`API error: ${response.status}`);
+//   }
+//   return await response.json();
+// }
 
 export function createWebSocketConnection(
   onMessage: (data: ApiResponse) => void,
@@ -15,28 +19,13 @@ export function createWebSocketConnection(
   onError?: (error: Event | Error) => void
 ): WebSocket {
   // Determine protocol based on current page protocol
-  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  
-  // Use the correct backend URL based on environment 
-  let wsUrl = `${protocol}//${window.location.hostname}`;
-  
-  // In production (on Render), the backend is available at its own domain
-  // In development, it runs on port 8001
-  if (process.env.NODE_ENV === 'production') {
-    // Use the NEXT_PUBLIC_API_URL environment variable without protocol
-    if (process.env.NEXT_PUBLIC_API_URL) {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      // Remove http:// or https:// if present
-      const host = apiUrl.replace(/^https?:\/\//, '');
-      wsUrl = `${protocol}//${host}`;
-    }
-  } else {
-    wsUrl = `${wsUrl}:8001`;
-  }
-  
-  // Append the WebSocket path
-  wsUrl = `${wsUrl}/ws`;
-  
+  const protocol = typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+
+  // Use the API_BASE_URL to construct the WebSocket URL
+  // Remove http:// or https:// from API_BASE_URL to get the host
+  const host = API_BASE_URL.replace(/^https?:\/\//, '');
+  const wsUrl = `${protocol}//${host}/ws`;
+
   console.log(`Connecting to WebSocket at: ${wsUrl}`);
   const ws = new WebSocket(wsUrl);
   

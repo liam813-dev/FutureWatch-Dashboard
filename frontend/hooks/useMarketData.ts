@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DashboardData } from '../types';
+import { API_BASE_URL } from '../utils/api';
 
 export function useMarketData() {
   const [data, setData] = useState<DashboardData | null>(null);
@@ -9,7 +10,7 @@ export function useMarketData() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8001/api/data');
+        const response = await fetch(`${API_BASE_URL}/api/data`);
         if (!response.ok) throw new Error('Failed to fetch data');
         const json = await response.json();
         setData(json);
