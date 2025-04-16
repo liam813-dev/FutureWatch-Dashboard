@@ -118,8 +118,13 @@ manager = ConnectionManager()
 # --- Global State --- 
 # Store the fetched symbols globally
 top_symbols: List[str] = []
+# Remove Redis client instance
+# redis_client: Optional[redis.Redis] = None 
+# Remove Redis key constant
+# DASHBOARD_DATA_KEY = "dashboard_data" 
 
 # --- Startup and Shutdown Events ---
+# Bring back broadcast task variable
 broadcast_task = None
 
 @app.get("/api/health")
@@ -133,6 +138,7 @@ async def health_check():
 @app.get("/api/data")
 async def get_data():
     """API endpoint to get dashboard data"""
+    # Revert to direct data fetching
     try:
         data = await gather_dashboard_data()
         return data
@@ -169,6 +175,7 @@ async def websocket_endpoint(websocket: WebSocket):
         if websocket in manager.active_connections:
             await manager.disconnect(websocket)
 
+# Bring back the data broadcasting loop
 async def broadcast_data():
     while True:
         try:
@@ -184,7 +191,7 @@ async def broadcast_data():
             logger.error(f"Error in broadcast loop: {str(e)}\n{traceback.format_exc()}")
         
         # Always wait before next iteration, even if we had an error
-        await asyncio.sleep(1)
+        await asyncio.sleep(1) # Consider making this interval configurable
 
 async def fetch_and_cache_macro_data():
     """Fetches all macro data points and caches them in shared_state."""
@@ -238,9 +245,14 @@ async def fetch_and_cache_macro_data():
 
 @app.on_event("startup")
 async def startup_event():
-    global broadcast_task, top_symbols
+    global broadcast_task, top_symbols # Add broadcast_task back
     logger.info("--- LOG: Server starting up... --- ")
     
+    # Remove Redis Connection Init
+    # redis_client = get_redis_connection()
+    # if not redis_client:
+    #      logger.warning("Redis connection failed on startup. /api/data endpoint will not function.")
+
     # Initialize Hyperliquid Service (async)
     logger.info("Initializing Hyperliquid Service...")
     await get_hyperliquid_service() 
@@ -266,48 +278,54 @@ async def startup_event():
     start_liquidation_tracker() 
     logger.info("Starting background Trade Tracker...")
     start_trade_tracker() 
-    
-    # Start the broadcast task
+
+    # Bring back scheduling of broadcast_data
+    logger.info("Starting broadcast task...")
     if broadcast_task is None:
-        broadcast_task = asyncio.create_task(broadcast_data())
-        logger.info("Dashboard data broadcast task started.")
+         broadcast_task = asyncio.create_task(broadcast_data())
+         logger.info("Dashboard data broadcast task started.")
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    global broadcast_task
+    global broadcast_task # Add broadcast_task back
     logger.info("--- LOG: Server shutting down... --- ")
-    
-    # Stop background trackers
-    logger.info("Stopping background Trade Tracker...")
-    stop_trade_tracker() 
-    logger.info("Stopping background Liquidation Tracker...")
-    stop_liquidation_tracker() 
-    
-    # Stop the broadcast task
+
+    # Bring back cancellation of broadcast_task
     if broadcast_task:
+        logger.info("Cancelling broadcast task...")
         broadcast_task.cancel()
         try:
             await broadcast_task
         except asyncio.CancelledError:
             logger.info("Broadcast task cancelled successfully.")
-            
-    # Close WebSocket connections gracefully
-    logger.info(f"Closing {len(active_connections)} active WebSocket connections...")
-    for connection in active_connections:
-        try:
-            await connection.close(code=1000)
         except Exception as e:
-            logger.error(f"Error closing WebSocket: {str(e)}")
-    active_connections.clear()
+             logger.error(f"Error during broadcast task cancellation: {e}")
+            
+    logger.info("Stopping liquidation tracker...")
+    await stop_liquidation_tracker()
+    logger.info("Liquidation tracker stopped.")
+    
+    logger.info("Stopping trade tracker...")
+    await stop_trade_tracker()
+    logger.info("Trade tracker stopped.")
+    
+    # Close WebSocket connections gracefully
+    logger.info(f"Closing {len(manager.active_connections)} WebSocket connections...")
+    tasks = [conn.close() for conn in manager.active_connections]
+    await asyncio.gather(*tasks, return_exceptions=True)
     logger.info("WebSocket connections closed.")
 
-    # Clean up Hyperliquid service
+    # Clean up Hyperliquid service (ensure this is present if needed)
     logger.info("Stopping Hyperliquid Service...")
     hyperliquid_service = await get_hyperliquid_service() # Get instance
-    await hyperliquid_service.stop() # Call its stop method
-    logger.info("Hyperliquid Service stopped.")
+    if hyperliquid_service: # Check if it was initialized
+        await hyperliquid_service.stop() # Call its stop method
+        logger.info("Hyperliquid Service stopped.")
+    else:
+        logger.warning("Hyperliquid service instance not found during shutdown.")
 
-# NEW: Add endpoint to get cached macro data (optional, mainly for debugging)
+    logger.info("--- LOG: Server shutting down... --- ")
+
 @app.get("/api/macro", response_model=Optional[MacroData])
 async def get_macro_data():
     return macro_data_cache
