@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
+import { getWebSocketUrl } from '../utils/endpoints';
 
 interface WebSocketMessage {
   type: string;
@@ -47,26 +48,35 @@ export const WebSocketProvider: React.FC<{ children: ReactNode }> = ({ children 
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      ws.current = new WebSocket('ws://localhost:8001/ws');
+      console.log('[WebSocketContext] Attempting to connect to WebSocket...');
+      ws.current = new WebSocket(getWebSocketUrl());
 
       ws.current.onopen = () => {
-        console.log('WebSocket connected');
+        console.log('[WebSocketContext] WebSocket connected successfully');
         reconnectAttempts.current = 0;
         setState(prev => ({ ...prev, isLoading: false, error: null, isConnected: true }));
       };
 
       ws.current.onmessage = (event) => {
         try {
+          console.log('[WebSocketContext] Received WebSocket message');
           const message = JSON.parse(event.data);
+          console.log('[WebSocketContext] Parsed message:', {
+            type: message.type,
+            hasData: !!message.data,
+            marketData: message.data?.market_data ? 'present' : 'missing',
+            liquidations: message.data?.recent_liquidations?.length || 0,
+            trades: message.data?.recent_large_trades?.length || 0
+          });
           setState(prev => ({ ...prev, data: message, error: null }));
         } catch (error) {
-          console.error('Error parsing WebSocket message:', error);
+          console.error('[WebSocketContext] Error parsing WebSocket message:', error);
           setState(prev => ({ ...prev, error: new Error('Failed to parse server message') }));
         }
       };
 
       ws.current.onclose = () => {
-        console.log('WebSocket disconnected');
+        console.log('[WebSocketContext] WebSocket disconnected');
         setState(prev => ({ ...prev, isLoading: false, isConnected: false }));
 
         if (reconnectAttempts.current < MAX_RECONNECT_ATTEMPTS) {
@@ -74,7 +84,7 @@ export const WebSocketProvider: React.FC<{ children: ReactNode }> = ({ children 
             INITIAL_RECONNECT_DELAY * Math.pow(2, reconnectAttempts.current),
             MAX_RECONNECT_DELAY
           );
-          console.log(`Attempting to reconnect in ${delay}ms (attempt ${reconnectAttempts.current + 1}/${MAX_RECONNECT_ATTEMPTS})`);
+          console.log(`[WebSocketContext] Attempting to reconnect in ${delay}ms (attempt ${reconnectAttempts.current + 1}/${MAX_RECONNECT_ATTEMPTS})`);
           
           reconnectTimeout.current = setTimeout(() => {
             reconnectAttempts.current += 1;
@@ -89,7 +99,7 @@ export const WebSocketProvider: React.FC<{ children: ReactNode }> = ({ children 
       };
 
       ws.current.onerror = (error) => {
-        console.error('WebSocket error:', error);
+        console.error('[WebSocketContext] WebSocket error:', error);
         setState(prev => ({
           ...prev,
           error: new Error('Connection error occurred'),
@@ -98,6 +108,7 @@ export const WebSocketProvider: React.FC<{ children: ReactNode }> = ({ children 
         }));
       };
     } catch (error) {
+      console.error('[WebSocketContext] Error in connect function:', error);
       setState(prev => ({
         ...prev,
         error: error as Error,
@@ -108,9 +119,11 @@ export const WebSocketProvider: React.FC<{ children: ReactNode }> = ({ children 
   });
 
   useEffect(() => {
+    console.log('[WebSocketContext] Initial connection attempt');
     connect.current();
 
     return () => {
+      console.log('[WebSocketContext] Cleaning up WebSocket connection');
       if (reconnectTimeout.current) {
         clearTimeout(reconnectTimeout.current);
       }
@@ -120,20 +133,12 @@ export const WebSocketProvider: React.FC<{ children: ReactNode }> = ({ children 
     };
   }, []);
 
-  const sendMessage = (message: WebSocketMessage) => {
-    if (ws.current?.readyState === WebSocket.OPEN) {
-      ws.current.send(JSON.stringify(message));
-    } else {
-      setState(prev => ({
-        ...prev,
-        error: new Error('Cannot send message: WebSocket is not connected')
-      }));
-    }
-  };
-
-  useEffect(() => {
-    setState(prev => ({ ...prev, sendMessage }));
-  }, []);
+  console.log('[WebSocketContext] Current state:', {
+    isLoading: state.isLoading,
+    isConnected: state.isConnected,
+    hasError: !!state.error,
+    hasData: !!state.data
+  });
 
   return (
     <WebSocketContext.Provider value={state}>

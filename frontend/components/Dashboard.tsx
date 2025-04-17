@@ -73,6 +73,15 @@ type ComponentMapper = Record<string, ComponentConfig>;
 const Dashboard: React.FC = () => {
   const { sidebarCollapsed } = useAppContext();
   const { data, isLoading, error, sendMessage } = useWebSocket();
+  console.log('[Dashboard] WebSocket data:', {
+    hasData: !!data,
+    isLoading,
+    hasError: !!error,
+    dataType: data?.type,
+    marketDataPresent: !!data?.data?.market_data,
+    liquidationsCount: data?.data?.recent_liquidations?.length || 0,
+    tradesCount: data?.data?.recent_large_trades?.length || 0
+  });
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
   // Dashboard view states
@@ -104,18 +113,25 @@ const Dashboard: React.FC = () => {
     document.body.classList.toggle('dark-mode', !isDarkMode);
   };
 
-  // Props for components
-  const liqProps = {
-    liquidations: data?.data?.recent_liquidations || [] as RecentLiquidation[],
-    isLoading,
-    error
+  // Extract data for components
+  const tradeData = data?.data?.recent_large_trades || [];
+  const liquidationData = data?.data?.recent_liquidations || [];
+  
+  // Create a properly typed defaultMarketData to handle empty case
+  const defaultMarketMetric = {
+    price: 0,
+    volume_24h: 0,
+    open_interest: 0,
+    funding_rate: 0,
+    price_change_percent: 0
   };
-
-  const tradeProps = {
-    trades: data?.data?.recent_large_trades || [] as RecentTrade[],
-    isLoading,
-    error
+  
+  const defaultMarketData = {
+    btc: defaultMarketMetric,
+    eth: defaultMarketMetric
   };
+  
+  const marketData = data?.data?.market_data || defaultMarketData;
 
   // Render a component with appropriate wrapper
   const renderComponent = (id: string, config: ComponentConfig) => {
@@ -176,7 +192,7 @@ const Dashboard: React.FC = () => {
       description: 'Real-time price movements',
       category: 'market',
       priority: 2,
-      component: () => <PriceChart marketData={data?.data?.market_data || defaultMarketData} />
+      component: () => <PriceChart marketData={marketData} />
     },
     'stablePriceChart': {
       title: 'Stable Price Chart',
@@ -190,14 +206,14 @@ const Dashboard: React.FC = () => {
       description: 'Recent liquidation events',
       category: 'trades',
       priority: 1,
-      component: () => <LiquidationFeed {...liqProps} />
+      component: () => <LiquidationFeed liquidations={liquidationData} isLoading={isLoading} error={error} />
     },
     'tradeFeed': {
       title: 'Trade Feed',
       description: 'Recent significant trades',
       category: 'trades',
       priority: 2,
-      component: () => <TradeFeed {...tradeProps} />
+      component: () => <TradeFeed trades={tradeData} isLoading={isLoading} error={error} />
     },
     'optionsTracker': {
       title: 'BTC Options',
@@ -215,7 +231,7 @@ const Dashboard: React.FC = () => {
         <div className={styles.tradeVolumeSummary}>
           <h3>24h Trading Volume</h3>
           <div className={styles.volumeStats}>
-            {Object.entries(data?.data?.market_data || {})
+            {Object.entries(marketData)
               .filter(([key]) => key !== 'timestamp')
               .map(([symbol, metrics]) => (
                 <div key={symbol} className={styles.volumeStat}>
@@ -268,7 +284,7 @@ const Dashboard: React.FC = () => {
       description: 'Visual representation of market movements',
       category: 'trades',
       priority: 5,
-      component: () => <TradeHeatmap marketData={data?.data?.market_data || defaultMarketData} isLoading={isLoading} />
+      component: () => <TradeHeatmap marketData={marketData} isLoading={isLoading} />
     },
     'stablecoinCard': {
       title: 'Stablecoin Flows',

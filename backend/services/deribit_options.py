@@ -1,6 +1,6 @@
 import requests
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any
 
 logger = logging.getLogger(__name__)
@@ -31,30 +31,49 @@ def get_btc_options(expired: bool = False) -> Dict[str, Any]:
         data = response.json()
         
         if data.get("result"):
-            # Process the data to extract only the relevant fields
+            # Process the data to extract only the relevant fields and calculate summaries
             processed_options = []
+            total_count = 0
+            call_count = 0
+            put_count = 0
+            expiring_soon_count = 0
+            
             for option in data["result"]:
+                expiring_soon_flag = is_expiring_soon(option.get("expiration_timestamp"))
+                option_type = option.get("option_type", "").lower()
+                
                 processed_options.append({
                     "instrument_name": option.get("instrument_name"),
                     "expiration_timestamp": option.get("expiration_timestamp"),
-                    # Format expiration timestamp as human-readable date
                     "expiration_date": datetime.fromtimestamp(
                         option.get("expiration_timestamp") / 1000
                     ).strftime("%Y-%m-%d") if option.get("expiration_timestamp") else None,
                     "strike": option.get("strike"),
-                    "option_type": option.get("option_type"),
+                    "option_type": option_type,
                     "settlement_period": option.get("settlement_period"),
                     "quote_currency": option.get("quote_currency"),
                     "base_currency": option.get("base_currency"),
                     "is_active": option.get("is_active", False),
                     "creation_timestamp": option.get("creation_timestamp"),
-                    "expiring_soon": is_expiring_soon(option.get("expiration_timestamp"))
+                    "expiring_soon": expiring_soon_flag
                 })
-            
+                
+                # Update counts
+                total_count += 1
+                if option_type == 'call':
+                    call_count += 1
+                elif option_type == 'put':
+                    put_count += 1
+                if expiring_soon_flag:
+                    expiring_soon_count += 1
+
             return {
                 "success": True,
                 "data": processed_options,
-                "count": len(processed_options)
+                "total_count": total_count,
+                "call_count": call_count,
+                "put_count": put_count,
+                "expiring_soon_count": expiring_soon_count
             }
         else:
             return {

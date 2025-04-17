@@ -5,6 +5,14 @@ import MultiSelectDropdown from './MultiSelectDropdown';
 import styles from './TradeFeed.module.css';
 import cardStyles from '../styles/CardFixes.module.css';
 
+type SortKey = keyof RecentTrade;
+type SortDirection = 'asc' | 'desc';
+
+interface SortConfig {
+  key: SortKey;
+  direction: SortDirection;
+}
+
 // Define value filter thresholds
 const VALUE_THRESHOLDS = [
     { label: '$1k+', value: 1000 },
@@ -20,14 +28,57 @@ interface TradeFeedProps {
   error: Error | null;
 }
 
-type SortKey = keyof RecentTrade | 'time';
-type SortDirection = 'asc' | 'desc';
-
 const TradeFeed: React.FC<TradeFeedProps> = ({ trades, isLoading, error }) => {
-  const [sortKey, setSortKey] = useState<SortKey>('time');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
-  const [minValueThreshold, setMinValueThreshold] = useState<number>(VALUE_THRESHOLDS[0].value);
+  console.log('[TradeFeed] Rendering with props:', {
+    tradesCount: trades?.length || 0,
+    isLoading,
+    hasError: !!error,
+    tradeSymbols: trades?.map(t => t.symbol).slice(0, 5)
+  });
+
+  const [minValueThreshold, setMinValueThreshold] = useState<number>(0);
   const [selectedSymbols, setSelectedSymbols] = useState<Set<string>>(new Set());
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'time', direction: 'desc' });
+
+  // IMPORTANT: Debug the available symbols
+  useEffect(() => {
+    if (trades && trades.length > 0) {
+      const availableSymbols = Array.from(new Set(trades.map(t => t.symbol)));
+      console.log('[TradeFeed] Available symbols:', availableSymbols);
+    }
+  }, [trades]);
+
+  // Initialize popular symbols when component loads or trades change
+  useEffect(() => {
+    if (trades && trades.length > 0) {
+      // If no symbols are selected yet, initialize with popular ones
+      if (selectedSymbols.size === 0) {
+        const availableSymbols = new Set(trades.map(t => t.symbol));
+        const defaultSymbols = new Set<string>();
+        
+        // Try to add popular symbols if they exist in the data
+        ['BTCUSDT', 'ETHUSDT'].forEach(symbol => {
+          if (availableSymbols.has(symbol)) {
+            defaultSymbols.add(symbol);
+          }
+        });
+
+        // If we couldn't find the popular ones, add some of the available ones
+        if (defaultSymbols.size === 0 && availableSymbols.size > 0) {
+          // Add up to 3 available symbols
+          const symbolsArray = Array.from(availableSymbols);
+          for (let i = 0; i < Math.min(3, symbolsArray.length); i++) {
+            defaultSymbols.add(symbolsArray[i]);
+          }
+        }
+
+        console.log('[TradeFeed] Setting default selected symbols:', Array.from(defaultSymbols));
+        if (defaultSymbols.size > 0) {
+          setSelectedSymbols(defaultSymbols);
+        }
+      }
+    }
+  }, [trades]);
 
   const formatValue = (num: number) => {
     if (num >= 1000000) {
@@ -47,10 +98,11 @@ const TradeFeed: React.FC<TradeFeedProps> = ({ trades, isLoading, error }) => {
   };
 
   const handleSort = (key: SortKey) => {
-    setSortDirection((prevDirection) =>
-      key === sortKey && prevDirection === 'desc' ? 'asc' : 'desc'
-    );
-    setSortKey(key);
+    setSortConfig(prevConfig => ({
+      ...prevConfig,
+      key,
+      direction: prevConfig.direction === 'desc' ? 'asc' : 'desc'
+    }));
   };
 
   const handleValueThresholdChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -62,34 +114,58 @@ const TradeFeed: React.FC<TradeFeedProps> = ({ trades, isLoading, error }) => {
   };
 
   const processedTrades = useMemo(() => {
-    const filtered = trades.filter(trade =>
-      selectedSymbols.has(trade.symbol) &&
-      trade.value_usd >= minValueThreshold
-    );
-
-    let sortableItems = [...filtered];
-    sortableItems.sort((a, b) => {
-      let aValue: any;
-      let bValue: any;
-
-      if (sortKey === 'time') {
-        aValue = new Date(a.time).getTime();
-        bValue = new Date(b.time).getTime();
-      } else {
-        aValue = a[sortKey];
-        bValue = b[sortKey];
-      }
-
-      if (aValue < bValue) {
-        return sortDirection === 'asc' ? -1 : 1;
-      }
-      if (aValue > bValue) {
-        return sortDirection === 'asc' ? 1 : -1;
-      }
-      return 0;
+    console.log('[TradeFeed] Processing trades with filters:', {
+      totalTrades: trades?.length || 0,
+      minValueThreshold,
+      selectedSymbols: selectedSymbols.size ? Array.from(selectedSymbols) : 'all'
     });
-    return sortableItems;
-  }, [trades, selectedSymbols, minValueThreshold, sortKey, sortDirection]);
+
+    let filtered = [...(trades || [])];
+    
+    // Apply value threshold filter
+    if (minValueThreshold > 0) {
+      filtered = filtered.filter(trade => trade.value_usd >= minValueThreshold);
+    }
+    
+    // *** CRITICAL CHANGE: ONLY filter by symbol if we have selected symbols ***
+    if (selectedSymbols.size > 0) {
+      filtered = filtered.filter(trade => selectedSymbols.has(trade.symbol));
+    } else {
+      // If no symbols selected, show all trades (don't filter)
+      console.log('[TradeFeed] No symbols selected, showing all trades');
+    }
+    
+    // Apply sorting
+    filtered.sort((a, b) => {
+      if (sortConfig.key === 'time') {
+        return sortConfig.direction === 'asc' 
+          ? new Date(a.time).getTime() - new Date(b.time).getTime()
+          : new Date(b.time).getTime() - new Date(a.time).getTime();
+      }
+      
+      const aValue = a[sortConfig.key];
+      const bValue = b[sortConfig.key];
+      
+      if (sortConfig.direction === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      }
+      return aValue < bValue ? 1 : -1;
+    });
+
+    console.log('[TradeFeed] Processed trades result:', {
+      inputCount: trades?.length || 0,
+      filteredCount: filtered.length,
+      sampleTrades: filtered.slice(0, 2).map(t => `${t.symbol} ${t.side} $${t.value_usd}`)
+    });
+    
+    return filtered;
+  }, [trades, minValueThreshold, selectedSymbols, sortConfig]);
+
+  // Add a helper to clear selection (show all trades)
+  const clearSymbolSelection = () => {
+    console.log('[TradeFeed] Clearing symbol selection to show all trades');
+    setSelectedSymbols(new Set());
+  };
 
   const SortableHeader: React.FC<{ columnKey: SortKey; label: string; className?: string; }> =
     ({ columnKey, label, className = '' }) => (
@@ -98,9 +174,9 @@ const TradeFeed: React.FC<TradeFeedProps> = ({ trades, isLoading, error }) => {
         onClick={() => handleSort(columnKey)}
       >
         {label}
-        {sortKey === columnKey && (
+        {sortConfig.key === columnKey && (
           <span className={styles.sortIndicator}>
-            {sortDirection === 'desc' ? '▼' : '▲'}
+            {sortConfig.direction === 'desc' ? '▼' : '▲'}
           </span>
         )}
       </span>
@@ -169,6 +245,14 @@ const TradeFeed: React.FC<TradeFeedProps> = ({ trades, isLoading, error }) => {
               selectedOptions={selectedSymbols}
               onChange={handleSymbolSelectionChange}
             />
+            {selectedSymbols.size > 0 && (
+              <button 
+                onClick={clearSymbolSelection}
+                className={styles.clearButton}
+              >
+                Clear
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -177,7 +261,19 @@ const TradeFeed: React.FC<TradeFeedProps> = ({ trades, isLoading, error }) => {
         {processedTrades.length === 0 ? (
           <div className={cardStyles.emptyState}>
             <span className={cardStyles.emptyIcon}>📊</span>
-            <p className={cardStyles.emptyText}>No trades matching your filters</p>
+            <p className={cardStyles.emptyText}>
+              {trades.length === 0 
+                ? 'No trades available from the server' 
+                : 'No trades matching your filters'}
+            </p>
+            {selectedSymbols.size > 0 && trades.length > 0 && (
+              <button
+                onClick={clearSymbolSelection}
+                className={styles.clearAllButton}
+              >
+                Show All Trades
+              </button>
+            )}
           </div>
         ) : (
           <div className={styles.listContainer}>
@@ -193,7 +289,7 @@ const TradeFeed: React.FC<TradeFeedProps> = ({ trades, isLoading, error }) => {
             <div className={styles.tradesList}>
               {processedTrades.map((trade, index) => (
                 <div 
-                  key={`${trade.time}-${trade.symbol}-${trade.value_usd}-${index}`}
+                  key={trade.id || `${trade.time}-${trade.symbol}-${trade.value_usd}-${index}`}
                   className={`${styles.tradeItem} ${trade.side === 'buy' ? styles.buy : styles.sell}`}
                 >
                   <span className={styles.symbol}>{trade.symbol}</span>

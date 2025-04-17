@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 # Configuration
 BINANCE_WS_URL = "wss://fstream.binance.com/ws"  # Binance Futures WebSocket URL
-MIN_LIQUIDATION_VALUE = 500  # Lower threshold to capture more events ($500 minimum)
+MIN_LIQUIDATION_VALUE = 1000  # Lower threshold to $1k to capture more liquidations
 MAX_STORED_LIQUIDATIONS = 1000
 # Expanded list of tracked symbols
 TRACKED_SYMBOLS = [
@@ -24,8 +24,8 @@ TRACKED_SYMBOLS = [
 ]
 LIQUIDATION_WINDOW_HOURS = 48
 ENABLE_FALLBACK_DATA = True  # Enable fallback simulated data
-FALLBACK_INTERVAL_SECONDS = 30  # Generate fallback data every 30 seconds (more frequent)
-FORCE_FALLBACK_DATA = True  # Always generate some fallback data regardless of real data
+FALLBACK_INTERVAL_SECONDS = 5  # Generate fallback data more frequently
+FORCE_FALLBACK_DATA = True  # Force fallback data generation
 
 class LiquidationTracker:
     def __init__(self):
@@ -80,12 +80,14 @@ class LiquidationTracker:
         """Process a liquidation event from the WebSocket stream"""
         try:
             if event.get("e") != "forceOrder":
+                logger.debug(f"LiquidationTracker: Ignoring non-liquidation event: {event.get('e')}")
                 return
                 
             order = event.get("o", {})
             symbol = order.get("s")
             
             if symbol not in TRACKED_SYMBOLS:
+                logger.debug(f"LiquidationTracker: Ignoring untracked symbol: {symbol}")
                 return
                 
             # Calculate liquidation value
@@ -333,7 +335,17 @@ def start_liquidation_tracker():
     tracker = get_liquidation_tracker()
     if not tracker.running and (_tracker_task is None or _tracker_task.done()):
         logger.info("Starting LiquidationTracker listener task...")
+        tracker.running = True  # Set running flag before starting tasks
+        
+        # Start both the WebSocket listener and fallback data generation
         _tracker_task = asyncio.create_task(tracker.listen_liquidations(), name="liquidation_listener")
+        
+        # Always start fallback data generation
+        if ENABLE_FALLBACK_DATA and (tracker.fallback_task is None or tracker.fallback_task.done()):
+            logger.info("Starting LiquidationTracker fallback data generation...")
+            tracker.fallback_task = asyncio.create_task(tracker.generate_fallback_data(), name="liquidation_fallback")
+        
+        logger.info("LiquidationTracker tasks started successfully")
     else:
         logger.warning("LiquidationTracker task already running or starting.")
 

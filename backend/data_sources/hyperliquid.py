@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 class Settings(BaseModel):
     hyperliquid_base_url: str = "https://api.hyperliquid.xyz"
     hyperliquid_ws_url: str = "wss://api.hyperliquid.xyz/ws"
-    hyperliquid_info_url: str = "https://api.hyperliquid.xyz/info/exchange"
+    hyperliquid_info_url: str = "https://api.hyperliquid.xyz/info"
     
 class HyperliquidService:
     def __init__(self, settings: Settings):
@@ -106,7 +106,11 @@ class HyperliquidService:
             logger.debug(f"Fetching exchange info from: {info_url}")
             
             async with aiohttp.ClientSession() as session:
-                async with session.get(info_url) as response:
+                # Updated to use POST with exchange type parameter
+                async with session.post(
+                    info_url, 
+                    json={"type": "exchange"}
+                ) as response:
                     if response.status != 200:
                         error_text = await response.text()
                         logger.error(f"Failed to fetch exchange info: {response.status} - {error_text}")

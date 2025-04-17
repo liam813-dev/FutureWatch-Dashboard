@@ -21,7 +21,7 @@ const TradeHeatmap: React.FC<TradeHeatmapProps> = ({ marketData, isLoading = fal
         .map(([symbol, metrics]) => ({
           symbol: symbol.toUpperCase(),
           volume: (metrics as MarketMetric).volume_24h,
-          priceChange: (metrics as MarketMetric).price_change_percent
+          priceChange: (metrics as MarketMetric).price_change_percent * 100
         }))
         .sort((a, b) => b.volume - a.volume);
       

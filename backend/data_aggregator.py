@@ -59,23 +59,41 @@ def generate_default_market_data_object() -> MarketData:
 async def gather_dashboard_data() -> DashboardData:
     """Gather all dashboard data from various sources"""
     try:
-        market_data_result = await fetch_market_data()
+        # Try to fetch market data with retries
+        max_retries = 3
+        retry_delay = 2  # seconds
+        market_data_result = None
         
-        # Debug the market data
-        if isinstance(market_data_result, dict):
-            logger.info(f"Market data retrieved: BTC=${market_data_result.get('btc', {}).get('price', 'N/A')}, "
-                        f"ETH=${market_data_result.get('eth', {}).get('price', 'N/A')}")
+        for attempt in range(max_retries):
+            try:
+                market_data_result = await fetch_market_data()
+                if market_data_result and isinstance(market_data_result, dict):
+                    btc_price = market_data_result.get('btc', {}).get('price')
+                    eth_price = market_data_result.get('eth', {}).get('price')
+                    if btc_price and eth_price:
+                        logger.info(f"Successfully fetched market data on attempt {attempt + 1}")
+                        break
+                logger.warning(f"Market data fetch attempt {attempt + 1} failed or returned invalid data")
+            except Exception as e:
+                logger.error(f"Error fetching market data (attempt {attempt + 1}): {e}")
             
-            # Check if we have valid price data
-            btc_price = market_data_result.get('btc', {}).get('price')
-            eth_price = market_data_result.get('eth', {}).get('price')
-            
-            if not btc_price or not eth_price:
-                logger.warning("Market data missing prices, using default values")
+            if attempt < max_retries - 1:
+                logger.info(f"Retrying market data fetch in {retry_delay} seconds...")
+                await asyncio.sleep(retry_delay)
+                retry_delay *= 2  # Exponential backoff
+        
+        # If all retries failed, try to get partial data
+        if not market_data_result or not isinstance(market_data_result, dict):
+            logger.warning("All market data fetch attempts failed, trying to get partial data")
+            try:
+                # Try to get at least price data from a different source
+                market_data_result = await fetch_market_data(partial=True)
+                if not market_data_result:
+                    logger.warning("Could not get even partial market data, using defaults")
+                    market_data_result = generate_default_market_data()
+            except Exception as e:
+                logger.error(f"Error fetching partial market data: {e}")
                 market_data_result = generate_default_market_data()
-        else:
-            logger.warning("Market data not in expected format, using default values")
-            market_data_result = generate_default_market_data()
             
         # Convert to proper schema
         market_data = convert_to_market_data(market_data_result)
@@ -83,8 +101,7 @@ async def gather_dashboard_data() -> DashboardData:
         # Log the final market data being sent
         btc_metrics = market_data.btc
         eth_metrics = market_data.eth
-        logger.info(f"Converted dictionary market data to MarketData: BTC=${btc_metrics.price}, ETH=${eth_metrics.price}, Volume: ${btc_metrics.volume_24h}")
-        logger.info(f"Market data metrics: BTC price=${btc_metrics.price}, volume=${btc_metrics.volume_24h}, open_interest=${btc_metrics.open_interest}, dominance={btc_metrics.dominance}")
+        logger.info(f"Final market data: BTC=${btc_metrics.price}, ETH=${eth_metrics.price}, Volume: ${btc_metrics.volume_24h}")
         
         # Continue with the rest of the data gathering
         recent_liquidations_data = [] # Start with default for recent liquidations
@@ -115,21 +132,57 @@ async def gather_dashboard_data() -> DashboardData:
                         logger.debug(f"Symbol {symbol}: {len(longs)} longs, {len(shorts)} shorts")
                         
                         for liq in longs:
-                            # Ensure required fields
-                            liq["symbol"] = liq.get("symbol", symbol)
+                            # Ensure required fields with proper validation
+                            if not isinstance(liq, dict):
+                                logger.warning(f"Invalid liquidation data format: {liq}")
+                                continue
+                                
+                            # Set required fields with validation
+                            liq["symbol"] = symbol
                             liq["coin"] = symbol.replace("USDT", "")
+                            liq["side"] = "long"
+                            
+                            # Validate numeric fields
+                            try:
+                                liq["size"] = float(liq.get("quantity", 0) or liq.get("size", 0))
+                                liq["price"] = float(liq.get("price", 0))
+                                liq["value_usd"] = float(liq.get("value_usd", 0) or liq.get("value", 0))
+                            except (ValueError, TypeError) as e:
+                                logger.warning(f"Invalid numeric field in liquidation: {e}")
+                                continue
+                                
                             flat_liquidations.append(liq)
                             
                         for liq in shorts:
-                            # Ensure required fields
-                            liq["symbol"] = liq.get("symbol", symbol)
+                            # Ensure required fields with proper validation
+                            if not isinstance(liq, dict):
+                                logger.warning(f"Invalid liquidation data format: {liq}")
+                                continue
+                                
+                            # Set required fields with validation
+                            liq["symbol"] = symbol
                             liq["coin"] = symbol.replace("USDT", "")
+                            liq["side"] = "short"
+                            
+                            # Validate numeric fields
+                            try:
+                                liq["size"] = float(liq.get("quantity", 0) or liq.get("size", 0))
+                                liq["price"] = float(liq.get("price", 0))
+                                liq["value_usd"] = float(liq.get("value_usd", 0) or liq.get("value", 0))
+                            except (ValueError, TypeError) as e:
+                                logger.warning(f"Invalid numeric field in liquidation: {e}")
+                                continue
+                                
                             flat_liquidations.append(liq)
                 else:
                     logger.warning("Liquidation result dict has no 'liquidations' key")
             elif isinstance(liquidation_result, list):
-                # Already a flat list
-                flat_liquidations = liquidation_result
+                # Already a flat list, validate each item
+                for liq in liquidation_result:
+                    if not isinstance(liq, dict):
+                        logger.warning(f"Invalid liquidation data format: {liq}")
+                        continue
+                    flat_liquidations.append(liq)
             else:
                 logger.warning(f"Unexpected liquidation result type: {type(liquidation_result).__name__}")
             
@@ -147,26 +200,38 @@ async def gather_dashboard_data() -> DashboardData:
             except Exception as sort_err:
                 logger.warning(f"Could not sort flattened liquidations: {sort_err}")
                 
-            # Standardize format for frontend
+            # Standardize format for frontend with validation
             standardized_liquidations = []
             for liq in flat_liquidations:
                 try:
-                    # Map fields to expected names
+                    # Validate required fields
+                    if not all(k in liq for k in ["symbol", "side", "size", "price", "value_usd"]):
+                        logger.warning(f"Missing required fields in liquidation: {liq}")
+                        continue
+                        
+                    # Map fields to expected names with validation
                     std_liq = {
-                        "coin": liq.get("coin", "").replace("USDT", "") or liq.get("symbol", "").replace("USDT", ""),
-                        "side": liq.get("side", "").lower(),  # Standardize to lowercase
-                        "size": float(liq.get("quantity", 0) or liq.get("size", 0)),
-                        "price": float(liq.get("price", 0)),
-                        "value_usd": float(liq.get("value_usd", 0) or liq.get("value", 0)),
-                        "timestamp": liq.get("timestamp", "") or liq.get("time", "")
+                        "symbol": str(liq["symbol"]),
+                        "coin": str(liq.get("coin", liq["symbol"].replace("USDT", ""))),
+                        "side": str(liq["side"]).lower(),
+                        "size": float(liq["size"]),
+                        "price": float(liq["price"]),
+                        "value_usd": float(liq["value_usd"]),
+                        "timestamp": str(liq.get("timestamp", "") or liq.get("time", ""))
                     }
+                    
+                    # Additional validation
+                    if std_liq["size"] <= 0 or std_liq["price"] <= 0 or std_liq["value_usd"] <= 0:
+                        logger.warning(f"Invalid numeric values in liquidation: {std_liq}")
+                        continue
+                        
                     standardized_liquidations.append(std_liq)
                 except Exception as e:
                     logger.warning(f"Error standardizing liquidation: {e} | Data: {liq}")
             
             # Use the standardized list
             recent_liquidations_data = standardized_liquidations
-            logger.info(f"Prepared {len(recent_liquidations_data)} liquidations for dashboard")
+            logger.info(f"Prepared {len(recent_liquidations_data)} valid liquidations for dashboard")
 
         except Exception as liq_err:
             logger.error(f"Error processing liquidation data: {liq_err}", exc_info=True)
@@ -174,16 +239,32 @@ async def gather_dashboard_data() -> DashboardData:
             
         # --- Fetch Large Trades ---
         try:
-            # Get recent large trades
-            raw_trades = get_recent_large_trades()
-            logger.debug(f"Raw trades count: {len(raw_trades)}")
+            # Get recent large trades with retries
+            raw_trades = None
+            for attempt in range(max_retries):
+                try:
+                    raw_trades = get_recent_large_trades()
+                    if raw_trades:
+                        logger.info(f"Successfully fetched {len(raw_trades)} trades on attempt {attempt + 1}")
+                        break
+                    logger.warning(f"Trade fetch attempt {attempt + 1} returned no data")
+                except Exception as e:
+                    logger.error(f"Error fetching trades (attempt {attempt + 1}): {e}")
+                
+                if attempt < max_retries - 1:
+                    logger.info(f"Retrying trade fetch in {retry_delay} seconds...")
+                    await asyncio.sleep(retry_delay)
+                    retry_delay *= 2
+            
+            if not raw_trades:
+                logger.warning("All trade fetch attempts failed, using empty list")
+                raw_trades = []
             
             # Standardize format for frontend
             standardized_trades = []
             for trade in raw_trades:
                 try:
                     # Convert timestamp string to datetime object
-                    # Attempt multiple formats if necessary
                     timestamp_str = trade.get("time", "")
                     timestamp_dt = None
                     if timestamp_str:
@@ -191,34 +272,49 @@ async def gather_dashboard_data() -> DashboardData:
                             # Try ISO format with microseconds first
                             timestamp_dt = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
                         except ValueError:
-                             try:
+                            try:
                                 # Try common format without microseconds
                                 timestamp_dt = datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%S')
-                             except ValueError:
-                                 logger.warning(f"Could not parse timestamp: {timestamp_str}")
-                                 continue # Skip this trade if timestamp is invalid
+                            except ValueError:
+                                logger.warning(f"Could not parse timestamp: {timestamp_str}")
+                                continue # Skip this trade if timestamp is invalid
 
                     # Map fields to expected names in RecentTrade model
                     std_trade = {
                         "symbol": trade.get("symbol", "").replace("USDT", ""),
+                        "coin": trade.get("coin", trade.get("symbol", "").replace("USDT", "")), # Add coin field
                         "side": trade.get("side", "").lower(),
                         "price": float(trade.get("price", 0)),
                         "size": float(trade.get("quantity", 0)), # Rename 'quantity' to 'size'
-                        "value_usd": float(trade.get("value_usd", 0)), # Uncommented to include value_usd
-                        "timestamp": timestamp_dt # Use parsed datetime object for 'timestamp'
+                        "value_usd": float(trade.get("value_usd", 0)),
+                        "timestamp": timestamp_dt.isoformat() if timestamp_dt else timestamp_str # Use ISO format for frontend
                     }
+                    
+                    # Validate required fields
+                    if not all(k in std_trade for k in ["symbol", "side", "price", "size", "value_usd"]):
+                        logger.warning(f"Missing required fields in trade: {std_trade}")
+                        continue
+                        
+                    # Additional validation
+                    if std_trade["price"] <= 0 or std_trade["size"] <= 0 or std_trade["value_usd"] <= 0:
+                        logger.warning(f"Invalid numeric values in trade: {std_trade}")
+                        continue
+                        
                     standardized_trades.append(std_trade)
+                    logger.debug(f"Processed trade: {std_trade['symbol']} {std_trade['side']} {std_trade['value_usd']:.0f} USD")
                 except Exception as e:
                     logger.warning(f"Error standardizing trade: {e} | Data: {trade}")
+            
+            # Sort trades by timestamp (most recent first)
+            standardized_trades.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
             
             # Use the standardized list
             recent_trades_data = standardized_trades
             logger.info(f"Prepared {len(recent_trades_data)} trades for dashboard")
             
-        except Exception as trades_err:
-            logger.error(f"Error fetching trade data: {trades_err}", exc_info=True)
-            # Fallback to empty list on error
-            recent_trades_data = []
+        except Exception as trade_err:
+            logger.error(f"Error processing trade data: {trade_err}", exc_info=True)
+            recent_trades_data = [] # Fallback to empty list on error
 
         # --- Create Positions (simulated for now) ---
         liquidation_positions = await generate_liquidation_positions()
@@ -238,16 +334,14 @@ async def gather_dashboard_data() -> DashboardData:
         return dashboard_data
             
     except Exception as e:
-        # Log the error, then return basic data
-        logger.error(f"Error in gather_dashboard_data: {str(e)}", exc_info=True)
-        
-        # Use defaults in case of error
+        logger.error(f"Error gathering dashboard data: {e}", exc_info=True)
+        # Return default data in case of complete failure
         return DashboardData(
             market_data=generate_default_market_data_object(),
             liquidation_positions=[],
             recent_liquidations=[],
             recent_large_trades=[],
-            macro_data=macro_data_cache
+            macro_data={}
         )
 
 # Function to generate a dictionary of market data

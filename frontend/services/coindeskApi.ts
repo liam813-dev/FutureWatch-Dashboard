@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_BASE } from '../utils/endpoints';
 
 // CoinDesk Asset Events API types
 export interface AssetEvent {
@@ -23,7 +24,7 @@ export interface AssetEventsResponse {
 }
 
 // Use our backend proxy endpoint instead of direct CoinDesk API
-const BACKEND_API_URL = 'http://localhost:8001/api/coindesk/events';
+const BACKEND_API_URL = `${API_BASE}/api/coindesk/events`;
 
 /**
  * Fetches significant events for a specific digital asset from CoinDesk API via our backend proxy

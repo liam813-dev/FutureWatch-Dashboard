@@ -293,14 +293,14 @@
   width: 100% !important;
   max-width: 1400px;
   margin: 0 !important;
-  padding: 3rem 2rem 3rem 0 !important;
+  padding: 6rem 2rem !important;
   justify-content: flex-start;
   gap: 2rem;
-  background: rgba(11, 14, 17, 0.4) !important;
-  backdrop-filter: blur(8px);
+  background: transparent !important;
+  backdrop-filter: none;
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: none;
+  box-shadow: none;
 }
 
 .heroTextContainer {

@@ -21,6 +21,14 @@ async def get_btc_options_data(
     if not result["success"]:
         raise HTTPException(status_code=500, detail=result["error"])
     
+    # Keep original summary counts
+    summary_counts = {
+        "total_count": result.get("total_count", 0),
+        "call_count": result.get("call_count", 0),
+        "put_count": result.get("put_count", 0),
+        "expiring_soon_count": result.get("expiring_soon_count", 0)
+    }
+    
     # Apply filters if provided
     if any([option_type, min_strike is not None, max_strike is not None, expiry_date]):
         filtered_data = filter_options(
@@ -31,8 +39,18 @@ async def get_btc_options_data(
             expiry_date=expiry_date
         )
         
-        result["data"] = filtered_data
-        result["count"] = len(filtered_data)
-        result["filtered"] = True
+        # Return filtered data but keep original summary counts
+        return {
+            "success": True,
+            "data": filtered_data,
+            "filtered": True,
+            **summary_counts # Include original counts
+        }
     
-    return result 
+    # Return unfiltered data with summary counts
+    return {
+        "success": True,
+        "data": result["data"],
+        "filtered": False,
+        **summary_counts # Include original counts
+    } 

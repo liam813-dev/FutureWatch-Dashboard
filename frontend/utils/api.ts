@@ -1,7 +1,8 @@
 import { ApiResponse } from '../types/data';
+import { API_BASE, getWebSocketUrl } from './endpoints';
 
-// Determine the base API URL
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+// Remove the old API_BASE_URL in favor of the new endpoints file
+// export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 
 // Remove the old unused fetch function
 // export async function fetchDashboardData(): Promise<ApiResponse> {
@@ -18,13 +19,8 @@ export function createWebSocketConnection(
   onClose?: () => void,
   onError?: (error: Event | Error) => void
 ): WebSocket {
-  // Determine protocol based on current page protocol
-  const protocol = typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-
-  // Use the API_BASE_URL to construct the WebSocket URL
-  // Remove http:// or https:// from API_BASE_URL to get the host
-  const host = API_BASE_URL.replace(/^https?:\/\//, '');
-  const wsUrl = `${protocol}//${host}/ws`;
+  // Use the getWebSocketUrl function from endpoints.ts
+  const wsUrl = getWebSocketUrl();
 
   console.log(`Connecting to WebSocket at: ${wsUrl}`);
   const ws = new WebSocket(wsUrl);

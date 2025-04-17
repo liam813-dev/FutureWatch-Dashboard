@@ -4,6 +4,7 @@ import ClientRelativeTime from './ClientRelativeTime'; // Keep path as is for no
 import MultiSelectDropdown from './MultiSelectDropdown'; // Import the new component
 import styles from './LiquidationFeed.module.css'; // Create a CSS module for styling
 import cardStyles from '../styles/CardFixes.module.css'; // Import the new card fixes styles
+import { API_BASE } from '../utils/endpoints'; // Import API_BASE
 
 // Define symbol groups - keep these for defining the options
 // const TOP_COINS = ... (can be removed if not used elsewhere)
@@ -46,15 +47,16 @@ const LiquidationFeed: React.FC<LiquidationFeedProps> = ({ liquidations, isLoadi
       setIsLoadingSymbols(true);
       setSymbolsError(null);
       try {
-        const response = await fetch('http://localhost:8001/api/symbols');
+        const response = await fetch(`${API_BASE}/api/symbols`);
         if (!response.ok) {
           throw new Error(`Failed to fetch symbols: ${response.statusText}`);
         }
         const data: string[] = await response.json();
-        const sortedData = data.sort();
-        setAvailableSymbols(sortedData);
-        setSelectedSymbols(new Set(sortedData)); // Select all fetched symbols by default
-        console.log('[LiquidationFeed] Fetched and set symbols:', sortedData);
+        // Strip USDT suffix and sort
+        const processedSymbols = data.map(s => s.replace("USDT", "")).sort();
+        setAvailableSymbols(processedSymbols); 
+        setSelectedSymbols(new Set(processedSymbols)); // Select all processed symbols by default
+        console.log('[LiquidationFeed] Fetched and set symbols:', processedSymbols);
       } catch (err) {
         console.error('[LiquidationFeed] Error fetching symbols:', err);
         setSymbolsError(err instanceof Error ? err : new Error('Unknown error fetching symbols'));
@@ -121,10 +123,10 @@ const LiquidationFeed: React.FC<LiquidationFeedProps> = ({ liquidations, isLoadi
 
   const processedLiquidations = useMemo(() => {
     // Filter by value threshold AND selected symbols
-    const filtered = liquidations.filter(liq => 
-        liq.value_usd >= minValueThreshold &&
-        selectedSymbols.has(liq.coin) // Filter by selected coin
-    );
+    const filtered = liquidations.filter(liq => {
+      const symbolMatch = selectedSymbols.size === 0 || selectedSymbols.has(liq.coin);
+      return liq.value_usd >= minValueThreshold && symbolMatch;
+    });
     console.log(`[LiquidationFeed] Filtering ${liquidations?.length || 0} liqs by value >= ${minValueThreshold} and ${selectedSymbols.size} symbols. Found ${filtered.length}.`);
 
     let sortableItems = [...filtered];

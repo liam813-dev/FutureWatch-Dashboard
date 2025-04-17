@@ -3,6 +3,14 @@ import logging
 from datetime import datetime
 from typing import List, Optional, Tuple, Dict, Any, Union
 import os
+import json
+import traceback
+from dotenv import load_dotenv
+import signal
+import sys
+
+# Load environment variables from .env file in parent directory
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,8 +22,17 @@ from app.core.config import settings
 from app.core.logging import setup_logging
 from data_aggregator import gather_dashboard_data
 from data_sources.hyperliquid import get_hyperliquid_service
-from data_sources.liquidations import start_liquidation_tracker, get_liquidations_data, stop_liquidation_tracker
-from data_sources.trades import start_trade_tracker, stop_trade_tracker
+from data_sources.liquidations import (
+    start_liquidation_tracker,
+    get_liquidations_data,
+    stop_liquidation_tracker,
+    get_liquidation_tracker
+)
+from data_sources.trades import (
+    start_trade_tracker,
+    stop_trade_tracker,
+    get_trade_tracker
+)
 from data_sources.binance_utils import get_top_symbols_from_binance
 from data_sources.alpha_vantage import (
     fetch_latest_cpi,
@@ -35,7 +52,6 @@ from shared_state import macro_data_cache
 import aiohttp
 from fastapi.responses import JSONResponse
 from routers.options import router as options_router
-import traceback
 
 # Initialize logging
 setup_logging()
@@ -96,12 +112,25 @@ class ConnectionManager:
 
     async def broadcast(self, message: Dict[str, Any]):
         if not self.active_connections:
+            logger.debug("No active connections to broadcast to")
             return
+        
+        try:
+            # Log the message structure before serialization
+            logger.debug("Broadcasting message with structure: %s", {
+                'type': message.get('type'),
+                'has_data': bool(message.get('data')),
+                'data_keys': message.get('data', {}).keys(),
+                'connections': len(self.active_connections)
+            })
+        except Exception as e:
+            logger.error("Error logging message structure: %s", str(e))
         
         async with self._lock:
             dead_connections = []
             for connection in self.active_connections:
                 try:
+                    # Send JSON directly using FastAPI's WebSocket send_json
                     await connection.send_json(message)
                 except Exception as e:
                     logger.error(f"Error broadcasting to client: {str(e)}")
@@ -181,10 +210,34 @@ async def broadcast_data():
         try:
             # Gather dashboard data
             dashboard_data = await gather_dashboard_data()
-            logger.info("Dashboard data prepared")
+            logger.info("Dashboard data prepared with structure: %s", {
+                'market_data_present': bool(dashboard_data.market_data),
+                'liquidations_count': len(dashboard_data.recent_liquidations or []),
+                'trades_count': len(dashboard_data.recent_large_trades or []),
+                'macro_data_present': bool(dashboard_data.macro_data)
+            })
+            
+            # Convert Pydantic model to dict for serialization
+            dashboard_dict = dashboard_data.dict()
+            
+            # Format data for broadcast
+            broadcast_message = {
+                'type': 'dashboard_update',
+                'timestamp': datetime.now().isoformat(),
+                'data': dashboard_dict
+            }
+            
+            # Log the final message structure
+            logger.debug("Broadcasting message with structure: %s", {
+                'type': broadcast_message['type'],
+                'has_market_data': bool(broadcast_message['data'].get('market_data')),
+                'liquidations_count': len(broadcast_message['data'].get('recent_liquidations', [])),
+                'trades_count': len(broadcast_message['data'].get('recent_large_trades', [])),
+                'has_macro_data': bool(broadcast_message['data'].get('macro_data'))
+            })
             
             # Broadcast to all connected clients
-            await manager.broadcast(dashboard_data)
+            await manager.broadcast(broadcast_message)
             logger.debug("Data broadcast completed")
             
         except Exception as e:
@@ -281,14 +334,9 @@ async def fetch_and_cache_macro_data():
 
 @app.on_event("startup")
 async def startup_event():
-    global broadcast_task, top_symbols # Add broadcast_task back
+    global broadcast_task, top_symbols
     logger.info("--- LOG: Server starting up... --- ")
     
-    # Remove Redis Connection Init
-    # redis_client = get_redis_connection()
-    # if not redis_client:
-    #      logger.warning("Redis connection failed on startup. /api/data endpoint will not function.")
-
     # Initialize Hyperliquid Service (async)
     logger.info("Initializing Hyperliquid Service...")
     await get_hyperliquid_service() 
@@ -301,25 +349,36 @@ async def startup_event():
         logger.info(f"Successfully fetched {len(top_symbols)} symbols: {top_symbols[:5]}...")
     else:
         logger.warning("Failed to fetch top symbols from Binance.")
-        # Consider using a default list or handling the error more robustly
-        top_symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT"] # Example default
+        top_symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT"]
         logger.info(f"Using default symbols: {top_symbols}")
     
-    # Fetch initial macro data (async, fire-and-forget or await if critical for startup)
+    # Fetch initial macro data (async)
     asyncio.create_task(fetch_and_cache_macro_data())
     logger.info("Macro data fetching task scheduled.")
     
+    # Initialize and start trackers
+    logger.info("Initializing trackers...")
+    liquidation_tracker = get_liquidation_tracker()
+    trade_tracker = get_trade_tracker()
+    
     # Start background WebSocket listeners
     logger.info("Starting background Liquidation Tracker...")
-    start_liquidation_tracker() 
+    start_liquidation_tracker()
     logger.info("Starting background Trade Tracker...")
-    start_trade_tracker() 
-
-    # Bring back scheduling of broadcast_data
+    start_trade_tracker()
+    
+    # Wait a moment for trackers to initialize
+    await asyncio.sleep(1)
+    
+    # Verify tracker status
+    logger.info(f"Liquidation Tracker status: running={liquidation_tracker.running}, ws_connected={liquidation_tracker.ws is not None}")
+    logger.info(f"Trade Tracker status: running={trade_tracker.running}, ws_connected={trade_tracker.ws is not None}")
+    
+    # Start broadcast task
     logger.info("Starting broadcast task...")
     if broadcast_task is None:
-         broadcast_task = asyncio.create_task(broadcast_data())
-         logger.info("Dashboard data broadcast task started.")
+        broadcast_task = asyncio.create_task(broadcast_data())
+        logger.info("Dashboard data broadcast task started.")
 
 @app.on_event("shutdown")
 async def shutdown_event():
@@ -377,10 +436,12 @@ async def get_coindesk_events(
     Proxy endpoint for CoinDesk Asset Events API
     """
     COINDESK_API_BASE_URL = "https://data-api.coindesk.com/asset/v1"
-    # Get API key from environment or use a placeholder for logging
-    API_KEY = os.environ.get("COINDESK_API_KEY", "API_KEY_HIDDEN")
+    API_KEY = settings.COINDESK_API_KEY
     
-    # Build the query parameters
+    if not API_KEY:
+        logger.error("COINDESK_API_KEY not found in settings")
+        raise HTTPException(status_code=500, detail="CoinDesk API key not configured")
+    
     params = {
         "asset": asset,
         "asset_lookup_priority": asset_lookup_priority,
@@ -393,7 +454,7 @@ async def get_coindesk_events(
     url = f"{COINDESK_API_BASE_URL}/events"
     
     try:
-        logger.info(f"Proxying CoinDesk API request for asset: {asset}, limit: {limit}")
+        logger.info(f"Proxying CoinDesk API request for asset: {asset}, limit: {limit}, url: {url}")
         async with aiohttp.ClientSession() as session:
             async with session.get(
                 url, 
@@ -405,21 +466,50 @@ async def get_coindesk_events(
             ) as response:
                 if response.status != 200:
                     error_text = await response.text()
-                    logger.error(f"CoinDesk API error: {response.status} - {error_text}")
+                    logger.error(f"CoinDesk API error for {asset}: Status {response.status} - {error_text}")
+                    logger.error(f"Request URL: {url}")
+                    logger.error(f"Request params: {params}")
                     return JSONResponse(
                         status_code=response.status,
-                        content={"error": f"CoinDesk API error: {response.status}"}
+                        content={
+                            "error": f"CoinDesk API error: {response.status}",
+                            "details": error_text
+                        }
                     )
                 
                 data = await response.json()
-                logger.info(f"Successfully proxied CoinDesk API request for {asset}. Received {len(data.get('data', []))} events.")
+                events_count = len(data.get('data', []))
+                logger.info(f"Successfully proxied CoinDesk API request for {asset}. Received {events_count} events.")
+                
                 return data
                 
-    except Exception as e:
-        logger.error(f"Error proxying CoinDesk API request: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Error proxying CoinDesk API request: {str(e)}")
+    except aiohttp.ClientError as e:
+        logger.error(f"Error proxying CoinDesk API request: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"error": "Failed to proxy CoinDesk API request"}
+        )
+
+def handle_exit(signum, frame):
+    """Handle exit signals gracefully"""
+    logger.info("Received shutdown signal, cleaning up...")
+    # Stop the trackers
+    stop_liquidation_tracker()
+    stop_trade_tracker()
+    sys.exit(0)
 
 if __name__ == "__main__":
+    # Register signal handlers
+    signal.signal(signal.SIGINT, handle_exit)
+    signal.signal(signal.SIGTERM, handle_exit)
+    
     import uvicorn
     logger.info("Starting server on http://0.0.0.0:8001")
-    uvicorn.run("server:app", host="0.0.0.0", port=8001, reload=True)
+    uvicorn.run(
+        "server:app",
+        host="0.0.0.0",
+        port=8001,
+        reload=False,  # Disable reload to prevent double initialization
+        workers=1,
+        log_level="info"
+    )

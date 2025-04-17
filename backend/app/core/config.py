@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     # API Settings
     HYPERLIQUID_WS_URL: str = "wss://api.hyperliquid.xyz/ws"
     HYPERLIQUID_API_URL: str = "https://api.hyperliquid.xyz/info"
+    COINDESK_API_KEY: str = ""  # Will be loaded from environment variable
     
     # WebSocket Settings
     WS_HEARTBEAT_INTERVAL: int = 30  # seconds

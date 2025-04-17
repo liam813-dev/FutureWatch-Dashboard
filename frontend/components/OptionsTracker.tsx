@@ -20,7 +20,10 @@ interface OptionsData {
 interface OptionsResponse {
   success: boolean;
   data: OptionsData[];
-  count: number;
+  total_count: number;
+  call_count: number;
+  put_count: number;
+  expiring_soon_count: number;
   filtered?: boolean;
   error?: string;
 }
@@ -30,6 +33,12 @@ const OptionsTracker: React.FC = () => {
   const [options, setOptions] = useState<OptionsData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [summaryStats, setSummaryStats] = useState({
+    total: 0,
+    calls: 0,
+    puts: 0,
+    expiringSoon: 0
+  });
   
   // Filter state
   const [optionType, setOptionType] = useState<string>('');
@@ -57,6 +66,14 @@ const OptionsTracker: React.FC = () => {
         
         if (response.data.success) {
           setOptions(response.data.data);
+          
+          // Set summary stats from the response
+          setSummaryStats({
+            total: response.data.total_count,
+            calls: response.data.call_count,
+            puts: response.data.put_count,
+            expiringSoon: response.data.expiring_soon_count
+          });
           
           // Extract unique expiry dates for filter
           if (!response.data.filtered) {
@@ -116,18 +133,18 @@ const OptionsTracker: React.FC = () => {
         <div className={styles.statsContainer}>
           <div className={styles.stat}>
             <span className={styles.statLabel}>Total:</span>
-            <span className={styles.statValue}>{options.length}</span>
+            <span className={styles.statValue}>{loading ? '-' : summaryStats.total}</span>
           </div>
           <div className={styles.stat}>
             <span className={styles.statLabel}>Call/Put:</span>
             <span className={styles.statValue}>
-              {options.filter(opt => opt.option_type === 'call').length} / {options.filter(opt => opt.option_type === 'put').length}
+              {loading ? '- / -' : `${summaryStats.calls} / ${summaryStats.puts}`}
             </span>
           </div>
           <div className={styles.stat}>
             <span className={styles.statLabel}>Expiring Soon:</span>
             <span className={styles.statValue}>
-              {options.filter(opt => opt.expiring_soon).length}
+              {loading ? '-' : summaryStats.expiringSoon}
             </span>
           </div>
         </div>
